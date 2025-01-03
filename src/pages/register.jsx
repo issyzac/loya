@@ -6,7 +6,7 @@ import logo from "../assets/e-nzi-01.png";
 
 import axios from 'axios';
 
-import { useRegistrationStatus, useUpdateCustomerReceipts, useUpdateRegistrationStatus, useUpdateUser } from "../providers/UserProvider";
+import { useNewUserNumber, useRegistrationStatus, useUpdateCustomerReceipts, useUpdateNewUserNumber, useUpdateRegistrationStatus, useUpdateUser } from "../providers/UserProvider";
 
 export default function Register() {
 
@@ -46,6 +46,8 @@ function RegisterForm(){
     const updateRegistrationStatus = useUpdateRegistrationStatus();
 
     const setUser = useUpdateUser();
+
+    const newUserNumber = useNewUserNumber();
 
     const  [names, setNames] =  useState('');
 
@@ -164,6 +166,7 @@ function RegisterForm(){
                         id="phone"
                         name="Phone Number"
                         type="phone"
+                        value={newUserNumber ? newUserNumber : ''}  
                         required
                         autoComplete="phone"
                         className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -234,6 +237,8 @@ function LoginForm(){
 
     const setUser = useUpdateUser();
 
+    const updateNewUserNumber = useUpdateNewUserNumber();
+
     const updateRegistrationStatus = useUpdateRegistrationStatus();
 
     const axiosInstance = axios.create();
@@ -261,6 +266,7 @@ function LoginForm(){
             })    
             .catch (function (error){
                 updateRegistrationStatus(false);
+                updateNewUserNumber(phoneNumber);
                 console.log('User not found');
             });
 
