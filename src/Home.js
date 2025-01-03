@@ -12,7 +12,7 @@ import AccountNavigationMenu from './elements/account-navigation-menu'
 import CustomerProfile from './elements/customer-profile'
 import LeaderBoard from './elements/leader-board'
 import CustomerHome from './elements/customer-home'
-import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 import logo from './assets/e-nzi-01.png' 
 import { Route, Routes } from 'react-router-dom'
@@ -46,9 +46,9 @@ export default function Home() {
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             <div className="relative flex items-center justify-center py-5 lg:justify-between">
               {/* Logo */}
-              <div className="absolute left-0 shrink-0 lg:static">
+              <div className="absolute left-0 shrink-0 lg:static pl-2 pt-8">
                 <a href="#">
-                  <span className="sr-only">Your Company</span>
+                  <span className="sr-only">LOYA</span>
                   <img
                     alt="Your Company"
                     src={logo}
@@ -73,7 +73,7 @@ export default function Home() {
               </div>
 
               {/* Search */}
-              <div className="min-w-0 flex-1 px-12 lg:hidden">
+              <div className="min-w-0 flex-1 px-12 hidden">
                 <div className="mx-auto grid w-full max-w-xs grid-cols-1">
                   <input
                     name="search"
@@ -90,7 +90,7 @@ export default function Home() {
               </div>
 
               {/* Menu button */}
-              <div className="absolute right-0 shrink-0 lg:hidden">
+              <div className="absolute right-0 shrink-0 lg:hidden pr-2 pt-8">
                 {/* Mobile menu button */}
                 <PopoverButton className="group relative inline-flex items-center justify-center rounded-md bg-transparent p-2 text-indigo-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
                   <span className="absolute -inset-0.5" />
@@ -120,7 +120,7 @@ export default function Home() {
                     <div>
                       <img
                         alt="Your Company"
-                        src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
+                        src={logo}
                         className="h-8 w-auto"
                       />
                     </div>
@@ -133,77 +133,37 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="mt-3 space-y-1 px-2">
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                    >
-                      Home
-                    </a>
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                    >
-                      Profile
-                    </a>
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                    >
-                      Resources
-                    </a>
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                    >
-                      Company Directory
-                    </a>
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                    >
-                      Openings
-                    </a>
-                  </div>
-                </div>
-                <div className="pb-2 pt-4">
-                  <div className="flex items-center px-5">
-                    <div className="shrink-0">
-                      <img alt="" src="" className="size-10 rounded-full" />
-                    </div>
-                    <div className="ml-3 min-w-0 flex-1">
-                      <div className="truncate text-base font-medium text-gray-800"></div>
-                      <div className="truncate text-sm font-medium text-gray-500"></div>
-                    </div>
-                    <button
-                      type="button"
-                      className="relative ml-auto shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon aria-hidden="true" className="size-6" />
-                    </button>
-                  </div>
-                  <div className="mt-3 space-y-1 px-2">
-                    {userNavigation.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800"
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                    <Link to='/home' className='block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800' >
+                        Home
+                    </Link>
+                    <Link to='/profile' className='block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800' >
+                        Profile
+                    </Link>
                   </div>
                 </div>
               </div>
             </PopoverPanel>
           </div>
         </Popover>
-          <main className="-mt-24 pb-8">
+          <main className="-mt-24 pb-8 pt-8">
             <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
               <h1 className="sr-only">Page title</h1>
               {/* Main 3 column grid */}
               <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+                
+              <div className="grid grid-cols-1 gap-4 lg:hidden">
+                  <section aria-labelledby="section-2-title">
+                    <h2 id="section-2-title" className="sr-only">
+                      Section title
+                    </h2>
+                    <div className="overflow-hidden rounded-lg bg-white shadow">
+                      <div className="p-10">
+                        <LeaderBoard />
+                      </div>
+                    </div>
+                  </section>
+                </div>
+                
                 {/* Left column */}
                 <div className="grid grid-cols-1 gap-4 lg:col-span-2">
                   <section aria-labelledby="section-1-title">
@@ -223,7 +183,7 @@ export default function Home() {
                 </div>
 
                 {/* Right column */}
-                <div className="grid grid-cols-1 gap-4">
+                <div className="hidden lg:grid grid-cols-1 gap-4">
                   <section aria-labelledby="section-2-title">
                     <h2 id="section-2-title" className="sr-only">
                       Section title
