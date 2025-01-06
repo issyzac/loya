@@ -8,6 +8,8 @@ import axios from 'axios';
 
 import { useNewUserNumber, useRegistrationStatus, useUpdateCustomerReceipts, useUpdateNewUserNumber, useUpdateRegistrationStatus, useUpdateUser } from "../providers/UserProvider";
 
+const baseUrl = "https://enzi.ddns.net";
+
 export default function Register() {
 
 const registrationStatus = useRegistrationStatus();
@@ -75,7 +77,7 @@ function RegisterForm(){
 
         event.preventDefault();
 
-        axiosInstance.post(`http://5.180.149.168:5001/api/customers/`, {
+        axiosInstance.post(baseUrl+`/api/customers/`, {
             "name": names,
             "email": email,
             "phone_number": phoneNumber,
@@ -101,7 +103,7 @@ function RegisterForm(){
 
     const fetchReceipts = (customerId) => {
 
-        axiosInstance.get(`http://5.180.149.168:5001/api/receipts/search?customer_id=`+customerId)
+        axiosInstance.get(baseUrl+`/api/receipts/search?customer_id=`+customerId)
         .then(res => {
                 console.log("Response Code:   "+res.status);
                 // if (res.status === 200){
@@ -254,7 +256,7 @@ function LoginForm(){
     const handleSubmit = (event) => {
         event.preventDefault();
         
-        axiosInstance.get(`http://5.180.149.168:5001/api/customers/search?phone_number=`+phoneNumber)
+        axiosInstance.get(baseUrl+`/api/customers/search?phone_number=`+phoneNumber)
             .then(res => {
                 console.log("Response Code:   "+res.status);
                 if (res.status === 200){
@@ -274,7 +276,7 @@ function LoginForm(){
 
     const fetchReceipts = (customerId) => {
 
-        axiosInstance.get(`http://5.180.149.168:5001/api/receipts/search?customer_id=`+customerId)
+        axiosInstance.get(baseUrl+`/api/receipts/search?customer_id=`+customerId)
         .then(res => {
                 console.log("Response is :   "+res.data.receipts[0].points_balance);
                 setCustomerReceipts(res.data.receipts);
