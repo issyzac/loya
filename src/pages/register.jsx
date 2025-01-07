@@ -167,7 +167,8 @@ function RegisterForm(){
                     <input
                         id="phone"
                         name="Phone Number"
-                        type="phone"
+                        type="number"
+                        pattern="[0-9]*"
                         value={newUserNumber ? newUserNumber : ''}  
                         required
                         autoComplete="phone"
@@ -295,7 +296,8 @@ function LoginForm(){
                           <input
                             id="phone_number"
                             name="Phone Number"
-                            type="phone_number"
+                            type="number"
+                            pattern="[0-9]*"
                             required
                             placeholder="Phone Number"
                             autoComplete="phone_number"
