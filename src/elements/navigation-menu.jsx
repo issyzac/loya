@@ -3,6 +3,8 @@ import React from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { Link } from 'react-router-dom'
 import { useUpdateUser } from '../providers/UserProvider'
+import { useCurrentPage, useUpdateCurrentPage } from '../providers/AppProvider'
+import { Button } from '@headlessui/react'
 
 const navigation = [
     { name: 'Home', href: '/home', current: true },
@@ -16,6 +18,8 @@ const navigation = [
 export default function NavigationMenu (){
 
   const setUser = useUpdateUser();
+  const currentPage = useCurrentPage();
+  const updateCurrentPage = useUpdateCurrentPage();
 
     return(
         <div className="hidden border-t border-white/20 py-5 lg:block">
@@ -23,14 +27,17 @@ export default function NavigationMenu (){
               <div className="col-span-2">
                 <nav className="flex space-x-4">
                   {navigation.map((item) => (
-                    <Link
-                     to={item.href}
-                     className={classNames(
-                      item.current ? 'text-white' : 'text-indigo-100',
-                      'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10',
-                    )} >
+                    <Button
+                      onClick={() => {
+                        updateCurrentPage(item.name);
+                        console.log('Current Page: '+currentPage);
+                      }}
+                      className={
+                        classNames(item.name === currentPage ? 'text-white' : 'text-indigo-100',
+                          item.name === currentPage ? 'bg-white/10' : '',
+                          'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10',)} >
                         {item.name}
-                    </Link>
+                    </Button>
                   ))}
                 </nav>
               </div>

@@ -1,4 +1,5 @@
 import {
+  Button,
   Popover,
   PopoverBackdrop,
   PopoverButton,
@@ -18,7 +19,7 @@ import logo from './assets/e-nzi-01.png'
 import { Route, Routes } from 'react-router-dom'
 import { UserProvider, UserContext, useUser, useUpdateUser } from './providers/UserProvider'
 import { useContext, useEffect } from 'react'
-import { useAppState } from './providers/AppProvider'
+import { useAppState, useCurrentPage, useUpdateCurrentPage } from './providers/AppProvider'
 
 const user = {
   name: 'Tom Cook',
@@ -35,10 +36,11 @@ const userNavigation = [
 
 export default function Home() {
 
-  const {state, actions} = useAppState();
-
   const user = useUser();
   const updateUser = useUpdateUser();
+
+  const currentPage = useCurrentPage();
+  const updateCurrentPage = useUpdateCurrentPage();
 
   return (
       <div className="min-h-full">
@@ -133,12 +135,16 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="mt-3 space-y-1 px-2">
-                    <Link to='/home' className='block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800' >
+                    <Button onClick={() => {
+                      updateCurrentPage("Home");
+                    }} className='block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800' >
                         Home
-                    </Link>
-                    <Link to='/profile' className='block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800' >
+                    </Button>
+                    <Button onClick={() => {
+                      updateCurrentPage("Profile");
+                    }} className='block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 hover:text-gray-800' >
                         Profile
-                    </Link>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -172,11 +178,7 @@ export default function Home() {
                     </h2>
                     <div className="overflow-hidden rounded-lg bg-white shadow h-[40rem]">
                       <div className="p-10">
-                        <Routes>
-                          <Route path='/' element={<CustomerHome />} />
-                          <Route path='/home' element={<CustomerHome />} />
-                          <Route path='/profile' element={< CustomerProfile/>} />
-                        </Routes>
+                        { currentPage === 'Home' ? <CustomerHome /> : <CustomerProfile /> }
                       </div>
                     </div>
                   </section>

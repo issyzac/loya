@@ -1,30 +1,33 @@
 
-import React, {useContext, createContext} from 'react';
+import React, {useContext, createContext, useState} from 'react';
 
-const AppContext = createContext();
+const CurrentPageContext = createContext();
+const UpdateCurrentPageContext = createContext();
 
-export function useAppState() {
-  return useContext(AppContext);
+export function useCurrentPage() {
+  return useContext(CurrentPageContext);
+}
+
+export function useUpdateCurrentPage(){
+  return useContext(UpdateCurrentPageContext);
 }
 
 export function AppProvider({children}) {
 
-    const state = {
-        pageStatus: {
-          currentPage: 'home',
-        },
-    };
+  let page = "Home";
 
-  const actions = {
-      setPageStatus: (status) => {
-        state.pageStatus.currentPage = status;
-      }
-    };
+  const [currentPage, setCurrentPage] = useState(page);
 
-    return (
-    <AppContext.Provider value={{state, actions}}>
-      {children}
-    </AppContext.Provider>
-    );
+  function updateCurrentPage(page) {
+    setCurrentPage(page);
+  }
+
+  return (
+    <CurrentPageContext.Provider value={currentPage}>
+      <UpdateCurrentPageContext.Provider value={updateCurrentPage}>
+        {children}
+      </UpdateCurrentPageContext.Provider>
+    </CurrentPageContext.Provider>
+  );
 }
 
