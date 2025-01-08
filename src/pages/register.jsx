@@ -4,11 +4,9 @@ import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { Button } from "@headlessui/react";
 import logo from "../assets/e-nzi-01.png";
 
-import axios from 'axios';
+import axiosInstance from "../api/axios";
 
 import { useNewUserNumber, useRegistrationStatus, useUpdateCustomerReceipts, useUpdateNewUserNumber, useUpdateRegistrationStatus, useUpdateUser } from "../providers/UserProvider";
-
-const baseUrl = "https://enzi.ddns.net";
 
 export default function Register() {
 
@@ -17,15 +15,15 @@ const registrationStatus = useRegistrationStatus();
   return (
     <div className="flex min-h-full flex-1 items-center justify-center px-4 py-12 sm:px-6 lg:px-8 mt-30">
         <div className="space-y-10 divide-y divide-gray-900/10">
-            <div mt-20>
+            <div className="mt-20">
                 <img
                 alt="Your Company"
                 src={logo}
                 className="mx-auto h-20"
                 />
-                <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                Use your phone number to sign in
-                </h2>
+                <div className="mx-2 sm:mx-4 lg:mx-8">
+                    <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900 "> Use your phone number to sign in </h2>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-8 pt-10 md:grid-cols-3">
@@ -42,9 +40,6 @@ const registrationStatus = useRegistrationStatus();
 
 function RegisterForm(){
 
-
-    const axiosInstance = axios.create();
-
     const updateRegistrationStatus = useUpdateRegistrationStatus();
 
     const setUser = useUpdateUser();
@@ -59,59 +54,87 @@ function RegisterForm(){
 
     const  [city, setCity] =  useState('');
 
+    const  [nickName, setNickName] =  useState('');
+
     const  handleChange = (event) => {
         if (event.target.id === 'names'){
             setNames(event.target.value);
         }else if (event.target.id === 'email'){
             setEmail(event.target.value);
         }
-        else if (event.target.id === 'phone'){
+        else if (event.target.id === 'phone_number'){
             setPhoneNumber(event.target.value);
         }
-        else if (event.target.id === 'city'){
-            setCity(event.target.value);
+        else if (event.target.id === 'nick-name'){
+            setNickName(event.target.value);
         }
     };
 
-    const handleSubmit = (event) => {
+    const validateInputs = () => {
+        
+        if(city === ""){
+            setCity("Dar es Salaam");
+        }
+        
+        if(phoneNumber === ""){
+            setPhoneNumber(newUserNumber);
+        }
+
+        if (email === ""){
+            setEmail("noemail@enzi.coffee");
+        }
+
+
+        if (nickName === ""){
+            setNickName(names);
+        }
+
+    }
+
+    const handleSubmit = async (event) => {
 
         event.preventDefault();
 
-        axiosInstance.post(baseUrl+`/api/customers/`, {
-            "name": names,
-            "email": email,
-            "phone_number": phoneNumber,
-            "city": city,
-            "date_of_birth": "2022-10-19",
-            "region": "North",
-            "total_points": 10
-        }).then(res => {
-                console.log("Response Code:   "+res.status);
-                if (res.status === 200){
-                    //user found
-                    const usr = res.data.customer;
-                    setUser(usr);
-                    fetchReceipts();
-                }
-            })    
-            .catch (function (error){
-                updateRegistrationStatus(false);
-                console.log('Error Registering User');
-            });
+        validateInputs();
 
+        try {
+            const result = await axiosInstance.post("/api/customers/register", 
+                {
+                    "name": names,
+                    "email": email? email : "noemail@enzi.coffee",
+                    "phone_number": phoneNumber,
+                    //"nickname": nickName? nickName : names,
+                    "city": city ? city : "Dar es Salaam",
+                    "date_of_birth": "2022-10-19",
+                    "region": "North",
+                    "total_points": 10 //Registration Points
+                }
+            ).then(res => {
+                    console.log("Response Code:   "+res.status);
+                    if (res.status === 201){
+                        //user found
+                        const usr = res.data.customer;
+                        setUser(usr);
+                        fetchReceipts();
+                    }
+                })    
+                .catch ((error) => {
+                    updateRegistrationStatus(false);
+                    console.log('Error Registering User');
+                });
+
+        console.log("Result from post ", result.data);
+
+        } catch (error){
+            console.log("Error posting "+error);
+        }
     }
 
     const fetchReceipts = (customerId) => {
 
-        axiosInstance.get(baseUrl+`/api/receipts/search?customer_id=`+customerId)
+        axiosInstance.get("/api/receipts/search?customer_id="+customerId)
         .then(res => {
                 console.log("Response Code:   "+res.status);
-                // if (res.status === 200){
-                //     //user found
-                //     const usr = res.data.customer;
-                //     setUser(usr);
-                //     fetchReceipts();
-                // }
             })    
             .catch (function (error){
                 updateRegistrationStatus(false);
@@ -151,7 +174,6 @@ function RegisterForm(){
                         id="email"
                         name="email"
                         type="email"
-                        required
                         autoComplete="email"
                         className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                         onChange={handleChange}
@@ -165,15 +187,17 @@ function RegisterForm(){
                     </label>
                     <div className="mt-2">
                     <input
-                        id="phone"
+                        id="phone_number"
                         name="Phone Number"
-                        type="number"
+                        type="tel"
                         pattern="[0-9]*"
-                        value={newUserNumber ? newUserNumber : ''}  
                         required
-                        autoComplete="phone"
-                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                        onChange={handleChange}
+                        autoComplete="phone_number"
+                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 
+                        outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 
+                        focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+
+                        placeholder={newUserNumber ? newUserNumber : ''}   onChange={handleChange}
                     />
                     </div>
                 </div>
@@ -200,16 +224,16 @@ function RegisterForm(){
                     </div>
                 </div>
 
-                <div className="col-span-4">
-                    <label htmlFor="street-address" className="block text-sm/6 font-medium text-gray-900">
-                    City
+                <div className="col-span-4 hidden">
+                    <label htmlFor="nick-name" className="block text-sm/6 font-medium text-gray-900">
+                        Nickname
                     </label>
                     <div className="mt-2">
                     <input
-                        id="city"
-                        name="city"
+                        id="nick-name"
+                        name="nick-name"
                         type="text"
-                        autoComplete="city"
+                        autoComplete="nick-name"
                         className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                         onChange={handleChange}
                     />
@@ -244,8 +268,6 @@ function LoginForm(){
 
     const updateRegistrationStatus = useUpdateRegistrationStatus();
 
-    const axiosInstance = axios.create();
-
     const setCustomerReceipts = useUpdateCustomerReceipts();
 
     const  handleChange = (event) => {
@@ -254,10 +276,11 @@ function LoginForm(){
         console.log(phoneNumber);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
+        
         event.preventDefault();
         
-        axiosInstance.get(baseUrl+`/api/customers/search?phone_number=`+phoneNumber)
+        await axiosInstance.get("/api/customers/search?phone_number="+phoneNumber)
             .then(res => {
                 console.log("Response Code:   "+res.status);
                 if (res.status === 200){
@@ -275,9 +298,9 @@ function LoginForm(){
 
     }
 
-    const fetchReceipts = (customerId) => {
+    const fetchReceipts = async (customerId) => {
 
-        axiosInstance.get(baseUrl+`/api/receipts/search?customer_id=`+customerId)
+        await axiosInstance.get("/api/receipts/search?customer_id="+customerId)
         .then(res => {
                 console.log("Response is :   "+res.data.receipts[0].points_balance);
                 setCustomerReceipts(res.data.receipts);
@@ -296,7 +319,7 @@ function LoginForm(){
                           <input
                             id="phone_number"
                             name="Phone Number"
-                            type="number"
+                            type="tel"
                             pattern="[0-9]*"
                             required
                             placeholder="Phone Number"
