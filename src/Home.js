@@ -49,14 +49,14 @@ export default function Home() {
             <div className="relative flex items-center justify-center py-5 lg:justify-between">
               {/* Logo */}
               <div className="absolute left-0 shrink-0 lg:static pl-2 pt-8">
-                <a href="#">
+                <Link to="/">
                   <span className="sr-only">LOYA</span>
                   <img
                     alt="Your Company"
                     src={logo}
                     className="h-16 w-auto"
                   />
-                </a>
+                </Link>
               </div>
 
               {/* Right section on desktop */}
