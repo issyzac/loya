@@ -5,6 +5,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.47.14",
     "axios": "^1.7.9",
     "axios-debug-log": "^1.0.0",
     "clsx": "^2.1.1",
