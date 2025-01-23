@@ -1,6 +1,7 @@
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
 import { CursorArrowRaysIcon, EnvelopeOpenIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { useUser } from '../providers/UserProvider'
+import OrderSummary from './order-summary'
 
 const stats = [
   { id: 1, name: 'Total Subscribers', stat: '71,897', icon: UsersIcon, change: '122', changeType: 'increase' },
@@ -18,18 +19,18 @@ export default function LeaderBoard() {
 
   return (
     <div>
-      <h3 className="text-base font-semibold text-gray-900">Your Enzi Points</h3>
+      <h3 className="text-base font-semibold text-gray-900">Available LOYA Credit</h3>
       <div key={user.id} className="relative overflow-hidden rounded-lg bg-white px-4 pb-5 pt-5 shadow sm:px-6 sm:pt-6">
             <dt>
               <div className="absolute rounded-md bg-[#b58150] p-3">
                 <UsersIcon aria-hidden="true" className="size-6 text-white" />
               </div>
-              <p className="ml-16 truncate text-sm font-medium text-gray-500"> Total Points </p>
+              <p className="ml-16 truncate text-sm font-medium text-gray-500">L¥</p>
             </dt>
             <dd className="ml-16 flex items-baseline pb-2 sm:pb-3">
               <p className="text-2xl font-semibold text-gray-900">{user.total_points}</p>
             </dd>
-          </div>
+      </div>    
     </div>
   )
 }
