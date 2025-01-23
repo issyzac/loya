@@ -7,7 +7,8 @@ import { useCurrentPage, useUpdateCurrentPage } from '../providers/AppProvider'
 import { Button } from '@headlessui/react'
 
 const navigation = [
-    { name: 'Home', href: '/home', current: true },
+    { name: 'Home', href: '/home', current: true }, 
+    { name: 'Shop', href: '/shop', current: false },
     { name: 'Profile', href: '/profile', current: false } 
   ]
 
@@ -30,13 +31,12 @@ export default function NavigationMenu (){
                     <Button
                       onClick={() => {
                         updateCurrentPage(item.name);
-                        console.log('Current Page: '+currentPage);
                       }}
                       className={
                         classNames(item.name === currentPage ? 'text-white' : 'text-indigo-100',
                           item.name === currentPage ? 'bg-white/10' : '',
                           'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10',)} >
-                        {item.name}
+                        {item.name === "Shop" ? "Exclusive Shop" : item.name }
                     </Button>
                   ))}
                 </nav>
