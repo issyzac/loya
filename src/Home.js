@@ -12,27 +12,17 @@ import NavigationMenu from './elements/navigation-menu'
 import AccountNavigationMenu from './elements/account-navigation-menu'
 import CustomerProfile from './elements/customer-profile'
 import LeaderBoard from './elements/leader-board'
-import CustomerHome from './elements/customer-home'
-import { Link } from 'react-router-dom'
+import CustomerHome from './elements/customer-home';
+import { Link } from 'react-router-dom';
 
-import logo from './assets/e-nzi-01.png' 
-import { Route, Routes } from 'react-router-dom'
-import { UserProvider, UserContext, useUser, useUpdateUser } from './providers/UserProvider'
-import { useContext, useEffect } from 'react'
-import { useAppState, useCurrentPage, useUpdateCurrentPage } from './providers/AppProvider'
+import logo from './assets/e-nzi-01.png';
+import { useUser, useUpdateUser } from './providers/UserProvider';
+import { useCurrentPage, useCustomerOrder, useProductToBuy, useUpdateCurrentPage } from './providers/AppProvider';
+import Shop from './pages/shop';
+import ProductDetails from './pages/product_details';
+import OrderSummary from './elements/order-summary';
+import { useState } from 'react'
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
 
 export default function Home() {
 
@@ -41,6 +31,34 @@ export default function Home() {
 
   const currentPage = useCurrentPage();
   const updateCurrentPage = useUpdateCurrentPage();
+
+  const customerOrder = useCustomerOrder();
+
+  const productToBuy = useProductToBuy();
+
+  const renderPage = (page) => {
+    switch (page) {
+      case 'Home':
+        return <CustomerHome />;
+      case 'Profile':
+        return <CustomerProfile />;
+      case 'Shop':
+        return <Shop />;
+      case 'Product':
+        return <ProductDetails />;
+      default:
+        return <CustomerHome />;
+      }
+  }
+
+
+const getRightPanel = () => {
+  if (productToBuy && currentPage === 'Product') {
+    return <OrderSummary />;
+  } else {
+    return <LeaderBoard />;
+  }
+}
 
   return (
       <div className="min-h-full">
@@ -164,7 +182,7 @@ export default function Home() {
                     </h2>
                     <div className="overflow-hidden rounded-lg bg-white shadow">
                       <div className="p-10">
-                        <LeaderBoard />
+                        { getRightPanel() }
                       </div>
                     </div>
                   </section>
@@ -176,9 +194,9 @@ export default function Home() {
                     <h2 id="section-1-title" className="sr-only">
                       Section title
                     </h2>
-                    <div className="overflow-hidden rounded-lg bg-white shadow h-[40rem]">
+                    <div className="overflow-hidden rounded-lg bg-white shadow min-h-[30rem]">
                       <div className="p-10">
-                        { currentPage === 'Home' ? <CustomerHome /> : <CustomerProfile /> }
+                        { renderPage(currentPage) }
                       </div>
                     </div>
                   </section>
@@ -192,7 +210,7 @@ export default function Home() {
                     </h2>
                     <div className="overflow-hidden rounded-lg bg-white shadow">
                       <div className="p-10">
-                        <LeaderBoard />
+                        { getRightPanel() }
                       </div>
                     </div>
                   </section>
