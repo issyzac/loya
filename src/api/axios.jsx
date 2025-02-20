@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: "https://enzi.ddns.net", // Replace with your API's base URL
+  baseURL: "https://loyaserver.enzi.coffee", // Replace with your API's base URL
   timeout: 5000,
 });
 
