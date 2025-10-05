@@ -1,15 +1,22 @@
 import axiosInstance from './axios.jsx';
 
 /**
- * Wallet API Service
- * Provides all wallet-related API calls with proper error handling
+ * @class WalletService
+ * @description Provides all wallet-related API calls with proper error handling.
+ * This class is a singleton, and an instance is exported by default.
  */
-
 class WalletService {
   /**
-   * Create a new credit slip for items taken but not fully paid
-   * @param {Object} creditSlipData - Credit slip data
-   * @returns {Promise} API response
+   * Create a new credit slip for items taken but not fully paid.
+   * @param {object} creditSlipData - The data for the credit slip.
+   * @param {string} creditSlipData.customer_id - The ID of the customer.
+   * @param {Array<object>} creditSlipData.items - The items on the credit slip.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {string} slip_id - The ID of the created slip.
+   * @property {string} slip_number - The number of the created slip.
+   * @property {number} grand_total_cents - The total amount in cents.
    */
   async createCreditSlip(creditSlipData) {
     try {
@@ -27,9 +34,16 @@ class WalletService {
   }
 
   /**
-   * Process a payment and allocate it to credit slips and/or wallet
-   * @param {Object} paymentData - Payment data
-   * @returns {Promise} API response
+   * Process a payment and allocate it to credit slips and/or wallet.
+   * @param {object} paymentData - The payment data.
+   * @param {string} paymentData.customer_id - The ID of the customer.
+   * @param {number} paymentData.amount_cents - The payment amount in cents.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {string} payment_id - The ID of the created payment.
+   * @property {number} applied_total - The total amount applied to slips.
+   * @property {number} wallet_topup - The amount added to the wallet.
    */
   async processPayment(paymentData) {
     try {
@@ -47,9 +61,16 @@ class WalletService {
   }
 
   /**
-   * Apply wallet balance to pay down a credit slip
-   * @param {Object} walletApplicationData - Wallet application data
-   * @returns {Promise} API response
+   * Apply wallet balance to pay down a credit slip.
+   * @param {object} walletApplicationData - The wallet application data.
+   * @param {string} walletApplicationData.customer_id - The ID of the customer.
+   * @param {string} walletApplicationData.slip_id - The ID of the credit slip.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {number} applied_cents - The amount applied from the wallet.
+   * @property {string} slip_status - The new status of the slip.
+   * @property {number} remaining_slip_balance - The remaining balance of the slip.
    */
   async applyWalletToSlip(walletApplicationData) {
     try {
@@ -67,9 +88,14 @@ class WalletService {
   }
 
   /**
-   * Store customer change as wallet balance
-   * @param {Object} changeData - Change data
-   * @returns {Promise} API response
+   * Store customer change as wallet balance.
+   * @param {object} changeData - The change data.
+   * @param {string} changeData.customer_id - The ID of the customer.
+   * @param {number} changeData.change_cents - The change amount in cents.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {number} wallet_added - The amount added to the wallet.
    */
   async storeChange(changeData) {
     try {
@@ -85,10 +111,13 @@ class WalletService {
   }
 
   /**
-   * Get customer balance information
-   * @param {string} customerId - Customer ID
-   * @param {string} currency - Currency code (optional, defaults to TZS)
-   * @returns {Promise} API response
+   * Get customer balance information.
+   * @param {string} customerId - The ID of the customer.
+   * @param {string} [currency='TZS'] - The currency code.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {number} balance - The customer's wallet balance.
    */
   async getCustomerBalance(customerId, currency = 'TZS') {
     try {
@@ -105,10 +134,14 @@ class WalletService {
   }
 
   /**
-   * Get customer's open credit slips
-   * @param {string} customerId - Customer ID
-   * @param {string} currency - Currency code (optional)
-   * @returns {Promise} API response
+   * Get customer's open credit slips.
+   * @param {string} customerId - The ID of the customer.
+   * @param {string} [currency='TZS'] - The currency code.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} slips - The list of open credit slips.
+   * @property {number} slips_count - The number of open credit slips.
    */
   async getOpenCreditSlips(customerId, currency = 'TZS') {
     try {
@@ -126,12 +159,16 @@ class WalletService {
   }
 
   /**
-   * Get customer transaction history
-   * @param {string} customerId - Customer ID
-   * @param {string} currency - Currency code
-   * @param {number} page - Page number (default: 1)
-   * @param {number} perPage - Items per page (default: 20)
-   * @returns {Promise} API response
+   * Get customer transaction history.
+   * @param {string} customerId - The ID of the customer.
+   * @param {string} [currency='TZS'] - The currency code.
+   * @param {number} [page=1] - The page number.
+   * @param {number} [perPage=20] - The number of items per page.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} entries - The list of transaction entries.
+   * @property {object} pagination - The pagination information.
    */
   async getTransactionHistory(customerId, currency = 'TZS', page = 1, perPage = 20) {
     try {
@@ -149,9 +186,19 @@ class WalletService {
   }
 
   /**
-   * Get audit trail (staff only)
-   * @param {Object} filters - Filter options
-   * @returns {Promise} API response
+   * Get audit trail (staff only).
+   * @param {object} [filters={}] - The filter options.
+   * @param {number} [filters.page=1] - The page number.
+   * @param {number} [filters.perPage=50] - The number of items per page.
+   * @param {string} [filters.customerId] - The ID of the customer.
+   * @param {string} [filters.operationType] - The type of operation.
+   * @param {string} [filters.startDate] - The start date.
+   * @param {string} [filters.endDate] - The end date.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} entries - The list of audit trail entries.
+   * @property {object} pagination - The pagination information.
    */
   async getAuditTrail(filters = {}) {
     try {
@@ -177,10 +224,14 @@ class WalletService {
   }
 
   /**
-   * Search for customers by name or ID
-   * @param {string} searchTerm - Customer name or ID
-   * @param {boolean} isId - Whether the search term is an ID
-   * @returns {Promise} API response
+   * Search for customers by name or ID.
+   * @param {string} searchTerm - The customer name or ID.
+   * @param {boolean} [isId=false] - Whether the search term is an ID.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} customers - The list of found customers.
+   * @property {number} totalFound - The total number of found customers.
    */
   async searchCustomer(searchTerm, isId = false) {
     try {
@@ -216,9 +267,13 @@ class WalletService {
   }
   
   /**
-   * Get a customer by ID
-   * @param {string} customerId - Customer ID
-   * @returns {Promise} API response
+   * Get a customer by ID.
+   * @param {string} customerId - The ID of the customer.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} customers - The list containing the found customer.
+   * @property {number} totalFound - The total number of found customers (1 if found).
    */
   async getCustomerById(customerId) {
     try {
@@ -258,8 +313,11 @@ class WalletService {
   }
 
   /**
-   * Get all products for credit slip creation
-   * @returns {Promise} API response
+   * Get all products for credit slip creation.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} items - The list of products.
    */
   async getAllProducts() {
     try {
@@ -275,8 +333,11 @@ class WalletService {
   }
 
   /**
-   * Get wallet dashboard statistics
-   * @returns {Promise} API response with dashboard stats
+   * Get wallet dashboard statistics.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {object} stats - The dashboard statistics.
    */
   async getWalletStats() {
     try {
@@ -292,9 +353,12 @@ class WalletService {
   }
 
   /**
-   * Get customers with positive wallet balances
-   * @param {number} limit - Number of customers to return (optional)
-   * @returns {Promise} API response with customers
+   * Get customers with positive wallet balances.
+   * @param {number|null} [limit=null] - The number of customers to return.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} customers - The list of customers with positive balance.
    */
   async getCustomersWithBalance(limit = null) {
     try {
@@ -311,9 +375,12 @@ class WalletService {
   }
 
   /**
-   * Get recent wallet transactions
-   * @param {number} limit - Number of transactions to return (optional)
-   * @returns {Promise} API response with transactions
+   * Get recent wallet transactions.
+   * @param {number|null} [limit=null] - The number of transactions to return.
+   * @returns {Promise<object>} A promise that resolves with the API response.
+   * @property {boolean} success - Indicates if the request was successful.
+   * @property {object} data - The response data.
+   * @property {Array<object>} transactions - The list of recent transactions.
    */
   async getRecentTransactions(limit = null) {
     try {
@@ -330,10 +397,18 @@ class WalletService {
   }
 
   /**
-   * Handle API errors and return standardized error response
-   * @param {Error} error - The error object
-   * @param {string} defaultMessage - Default error message
-   * @returns {Object} Standardized error response
+   * Handle API errors and return a standardized error response.
+   * @param {Error} error - The error object.
+   * @param {string} defaultMessage - The default error message.
+   * @returns {object} A standardized error response.
+   * @property {boolean} success - Always false for an error.
+   * @property {object} error - The error details.
+   * @property {string} error.message - The error message.
+   * @property {string} error.code - The error code.
+   * @property {string} error.severity - The severity of the error.
+   * @property {boolean} error.isRetryable - Indicates if the request can be retried.
+   * @property {string} error.timestamp - The timestamp of the error.
+   * @property {Error} error.originalError - The original error object.
    */
   handleError(error, defaultMessage) {
     console.error('Wallet API Error:', error);
@@ -440,11 +515,11 @@ class WalletService {
   }
 
   /**
-   * Execute API call with retry logic
-   * @param {Function} apiCall - The API call function
-   * @param {number} maxRetries - Maximum number of retries
-   * @param {number} baseDelay - Base delay between retries in ms
-   * @returns {Promise} API response
+   * Execute an API call with retry logic.
+   * @param {Function} apiCall - The API call function to execute.
+   * @param {number} [maxRetries=3] - The maximum number of retries.
+   * @param {number} [baseDelay=1000] - The base delay between retries in milliseconds.
+   * @returns {Promise<object>} A promise that resolves with the API response.
    */
   async executeWithRetry(apiCall, maxRetries = 3, baseDelay = 1000) {
     let lastError;
@@ -473,5 +548,5 @@ class WalletService {
   }
 }
 
-// Export singleton instance
+// Export a singleton instance of the WalletService
 export default new WalletService();
