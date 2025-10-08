@@ -1,28 +1,25 @@
 /**
- * Error handling utilities for wallet operations
+ * @module error-handler
+ * @description Utilities for handling and displaying errors, success messages, and loading states.
  */
 
 /**
- * Format error messages for user display
- * @param {Object} error - Error object from API service
- * @returns {string} User-friendly error message
+ * Formats an error object into a user-friendly string.
+ * @param {object|string} error - The error object or string.
+ * @returns {string} A user-friendly error message.
  */
 export function formatErrorMessage(error) {
   if (!error) return 'An unexpected error occurred';
-  
   if (typeof error === 'string') return error;
-  
   if (error.message) return error.message;
-  
   if (error.error && error.error.message) return error.error.message;
-  
   return 'An unexpected error occurred';
 }
 
 /**
- * Get error type for styling and icons
- * @param {Object} error - Error object
- * @returns {string} Error type
+ * Determines the type of error for styling and icon selection.
+ * @param {object} error - The error object.
+ * @returns {string} The error type (e.g., 'validation', 'network', 'server').
  */
 export function getErrorType(error) {
   if (!error || !error.error) return 'error';
@@ -49,9 +46,9 @@ export function getErrorType(error) {
 }
 
 /**
- * Get appropriate CSS classes for error display
- * @param {string} errorType - Error type
- * @returns {Object} CSS classes
+ * Gets the appropriate CSS classes for a given error type.
+ * @param {string} errorType - The type of error.
+ * @returns {object} An object containing CSS classes for the container, text, and icon.
  */
 export function getErrorClasses(errorType) {
   const baseClasses = 'p-4 rounded-lg border';
@@ -97,9 +94,9 @@ export function getErrorClasses(errorType) {
 }
 
 /**
- * Create error display object
- * @param {Object} error - Error from API service
- * @returns {Object} Error display object
+ * Creates an error display object for rendering in the UI.
+ * @param {object} error - The error object from the API service.
+ * @returns {object} An object containing the formatted message, type, classes, and retry information.
  */
 export function createErrorDisplay(error) {
   const message = formatErrorMessage(error);
@@ -116,7 +113,10 @@ export function createErrorDisplay(error) {
 }
 
 /**
- * Success message utilities
+ * Creates a success display object.
+ * @param {string} message - The success message.
+ * @param {string} [details=null] - Additional details to display.
+ * @returns {object} A success display object with a message, type, and classes.
  */
 export function createSuccessDisplay(message, details = null) {
   return {
@@ -132,7 +132,9 @@ export function createSuccessDisplay(message, details = null) {
 }
 
 /**
- * Loading state utilities
+ * Creates a loading display object.
+ * @param {string} [message='Loading...'] - The loading message.
+ * @returns {object} A loading display object with a message, type, and classes.
  */
 export function createLoadingDisplay(message = 'Loading...') {
   return {
@@ -147,7 +149,10 @@ export function createLoadingDisplay(message = 'Loading...') {
 }
 
 /**
- * Validation error helpers
+ * Creates a field-specific validation error object.
+ * @param {string} fieldName - The name of the field with the error.
+ * @param {string} message - The error message.
+ * @returns {object} A field error object.
  */
 export function createFieldError(fieldName, message) {
   return {
@@ -157,10 +162,22 @@ export function createFieldError(fieldName, message) {
   };
 }
 
+/**
+ * Checks if there is a validation error for a specific field.
+ * @param {Array<object>} errors - The array of error objects.
+ * @param {string} fieldName - The name of the field to check.
+ * @returns {boolean} True if a field error exists, false otherwise.
+ */
 export function hasFieldError(errors, fieldName) {
   return errors && errors.some(error => error.field === fieldName);
 }
 
+/**
+ * Gets the error message for a specific field.
+ * @param {Array<object>} errors - The array of error objects.
+ * @param {string} fieldName - The name of the field.
+ * @returns {string|null} The error message, or null if no error is found.
+ */
 export function getFieldError(errors, fieldName) {
   if (!errors) return null;
   const error = errors.find(error => error.field === fieldName);

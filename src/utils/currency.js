@@ -1,13 +1,18 @@
 /**
- * Currency formatting utilities for TZS (Tanzanian Shilling)
+ * @module currency
+ * @description Currency formatting and calculation utilities for TZS (Tanzanian Shilling).
  */
 
 /**
- * Format cents to TZS currency display with enhanced formatting
- * @param {number} cents - Amount in cents
- * @param {boolean} showCurrency - Whether to show currency symbol (default: true)
- * @param {Object} options - Formatting options
- * @returns {string} Formatted currency string
+ * Formats a number in cents to a TZS currency string.
+ * @param {number} cents - The amount in cents.
+ * @param {boolean} [showCurrency=true] - Whether to include the 'TZS' currency symbol.
+ * @param {object} [options={}] - Formatting options.
+ * @param {number} [options.minimumFractionDigits=0] - The minimum number of decimal places.
+ * @param {number} [options.maximumFractionDigits=2] - The maximum number of decimal places.
+ * @param {boolean} [options.useGrouping=true] - Whether to use thousand separators.
+ * @param {boolean} [options.compact=false] - Whether to use compact notation (K for thousands, M for millions).
+ * @returns {string} The formatted currency string.
  */
 export function formatTZS(cents, showCurrency = true, options = {}) {
   if (cents === null || cents === undefined || isNaN(cents)) {
@@ -21,10 +26,8 @@ export function formatTZS(cents, showCurrency = true, options = {}) {
     compact = false
   } = options;
 
-  // Convert cents to TZS (divide by 100)
   const amount = cents / 100;
   
-  // Handle compact formatting for large numbers
   if (compact && Math.abs(amount) >= 1000000) {
     const millions = amount / 1000000;
     const formatted = millions.toLocaleString('en-US', {
@@ -41,7 +44,6 @@ export function formatTZS(cents, showCurrency = true, options = {}) {
     return showCurrency ? `TZS ${formatted}K` : `${formatted}K`;
   }
   
-  // Standard formatting with thousand separators
   const formatted = amount.toLocaleString('en-US', {
     minimumFractionDigits,
     maximumFractionDigits,
@@ -52,10 +54,13 @@ export function formatTZS(cents, showCurrency = true, options = {}) {
 }
 
 /**
- * Format TZS with enhanced visual styling
- * @param {number} cents - Amount in cents
- * @param {Object} options - Styling options
- * @returns {Object} Formatted currency with styling info
+ * Formats a TZS amount with additional styling information.
+ * @param {number} cents - The amount in cents.
+ * @param {object} [options={}] - Styling options.
+ * @param {boolean} [options.showCurrency=true] - Whether to include the 'TZS' currency symbol.
+ * @param {boolean} [options.highlightLarge=false] - Whether to apply special styling for large amounts.
+ * @param {boolean} [options.colorCode=false] - Whether to apply color coding based on the amount (positive/negative).
+ * @returns {object} An object containing the formatted string and styling information.
  */
 export function formatTZSWithStyle(cents, options = {}) {
   const {
@@ -71,7 +76,6 @@ export function formatTZSWithStyle(cents, options = {}) {
   let size = 'normal';
   let color = 'default';
 
-  // Determine styling based on amount
   if (colorCode) {
     if (amount > 0) {
       color = 'positive';
@@ -85,12 +89,11 @@ export function formatTZSWithStyle(cents, options = {}) {
     }
   }
 
-  // Highlight large amounts
   if (highlightLarge) {
-    if (Math.abs(amount) >= 100000) { // 1M+ TZS
+    if (Math.abs(amount) >= 100000) {
       size = 'large';
       className += ' font-bold text-lg';
-    } else if (Math.abs(amount) >= 10000) { // 100K+ TZS
+    } else if (Math.abs(amount) >= 10000) {
       size = 'medium';
       className += ' font-semibold';
     }
@@ -111,34 +114,35 @@ export function formatTZSWithStyle(cents, options = {}) {
 }
 
 /**
- * Parse TZS input to cents
- * @param {string|number} input - TZS amount as string or number
- * @returns {number} Amount in cents
+ * Parses a TZS currency string or number into cents.
+ * @param {string|number} input - The TZS amount as a string or number.
+ * @returns {number} The amount in cents.
  */
 export function parseTZSToCents(input) {
   if (!input) return 0;
   
-  // Remove currency symbol and spaces
   let cleanInput = input.toString().replace(/TZS|,|\s/g, '');
   
-  // Parse as float and convert to cents
   const amount = parseFloat(cleanInput);
   return isNaN(amount) ? 0 : Math.round(amount * 100);
 }
 
 /**
- * Format cents for input fields (without currency symbol)
- * @param {number} cents - Amount in cents
- * @returns {string} Formatted amount for input
+ * Formats a number in cents for use in an input field (no currency symbol).
+ * @param {number} cents - The amount in cents.
+ * @returns {string} The formatted amount string.
  */
 export function formatTZSForInput(cents) {
   return formatTZS(cents, false);
 }
 
 /**
- * Validate TZS amount input
- * @param {string} input - Input value
- * @returns {Object} Validation result
+ * Validates a TZS amount input string.
+ * @param {string} input - The input value to validate.
+ * @returns {object} An object containing the validation result.
+ * @property {boolean} isValid - Whether the input is valid.
+ * @property {string} [error] - The error message if the input is invalid.
+ * @property {number} [amount] - The parsed amount in cents if the input is valid.
  */
 export function validateTZSInput(input) {
   if (!input || input.trim() === '') {
@@ -160,7 +164,6 @@ export function validateTZSInput(input) {
     return { isValid: false, error: 'Amount is too large' };
   }
 
-  // Check for too many decimal places
   const decimalPart = cleanInput.split('.')[1];
   if (decimalPart && decimalPart.length > 2) {
     return { isValid: false, error: 'Maximum 2 decimal places allowed' };
@@ -170,10 +173,9 @@ export function validateTZSInput(input) {
 }
 
 /**
- * Format balance display with proper styling classes
- * @param {number} cents - Amount in cents
- * @param {boolean} isPositive - Whether amount is positive (for styling)
- * @returns {Object} Formatted display object
+ * Formats a balance display with appropriate styling classes.
+ * @param {number} cents - The amount in cents.
+ * @returns {object} An object containing the formatted balance and styling information.
  */
 export function formatBalanceDisplay(cents) {
   const isPositive = cents >= 0;
@@ -188,40 +190,40 @@ export function formatBalanceDisplay(cents) {
 }
 
 /**
- * Calculate percentage of amount
- * @param {number} amount - Amount in cents
- * @param {number} percentage - Percentage (0-100)
- * @returns {number} Calculated amount in cents
+ * Calculates a percentage of an amount in cents.
+ * @param {number} amount - The amount in cents.
+ * @param {number} percentage - The percentage to calculate (0-100).
+ * @returns {number} The calculated amount in cents.
  */
 export function calculatePercentage(amount, percentage) {
   return Math.round((amount * percentage) / 100);
 }
 
 /**
- * Add two amounts in cents safely
- * @param {number} amount1 - First amount in cents
- * @param {number} amount2 - Second amount in cents
- * @returns {number} Sum in cents
+ * Safely adds two amounts in cents.
+ * @param {number} amount1 - The first amount in cents.
+ * @param {number} amount2 - The second amount in cents.
+ * @returns {number} The sum in cents.
  */
 export function addAmounts(amount1, amount2) {
   return (amount1 || 0) + (amount2 || 0);
 }
 
 /**
- * Subtract two amounts in cents safely
- * @param {number} amount1 - First amount in cents
- * @param {number} amount2 - Second amount in cents
- * @returns {number} Difference in cents
+ * Safely subtracts one amount from another in cents.
+ * @param {number} amount1 - The first amount in cents.
+ * @param {number} amount2 - The second amount in cents.
+ * @returns {number} The difference in cents.
  */
 export function subtractAmounts(amount1, amount2) {
   return (amount1 || 0) - (amount2 || 0);
 }
 
 /**
- * Format transaction amount with direction indicator
- * @param {number} cents - Amount in cents
- * @param {string} direction - 'CREDIT' or 'DEBIT'
- * @returns {Object} Formatted transaction display
+ * Formats a transaction amount with a direction indicator (+/-).
+ * @param {number} cents - The amount in cents.
+ * @param {string} direction - The transaction direction ('CREDIT' or 'DEBIT').
+ * @returns {object} An object containing the formatted transaction and styling information.
  */
 export function formatTransactionAmount(cents, direction) {
   const formatted = formatTZS(cents);

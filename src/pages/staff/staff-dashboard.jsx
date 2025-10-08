@@ -17,12 +17,24 @@ import WalletSummaryWidget from './wallet/components/wallet-summary-widget';
 import WalletActivityWidget from './wallet/components/wallet-activity-widget';
 import { formatTZS } from '../../utils/currency';
 
+/**
+ * @component StaffDashboard
+ * @description The main dashboard page for staff members. It provides an overview of key metrics,
+ * navigation to different staff sections, and quick actions for wallet management.
+ *
+ * @returns {React.ReactElement} The rendered staff dashboard page.
+ */
 export default function StaffDashboard() {
   const staffUser = useStaffUser();
   const staffPermissions = useStaffPermissions();
   const updateStaffToken = useUpdateStaffToken();
   
-  // Wallet statistics state
+  /**
+   * @state {object} walletStats - Holds statistics related to the customer wallet system.
+   * @property {number} totalBalance - The total balance across all customer wallets.
+   * @property {number} customersWithBalance - The number of customers with a positive wallet balance.
+   * @property {boolean} loading - Indicates if the wallet stats are currently being loaded.
+   */
   const [walletStats, setWalletStats] = useState({
     totalBalance: 0,
     customersWithBalance: 0,
@@ -33,13 +45,18 @@ export default function StaffDashboard() {
     loadWalletStats();
   }, []);
 
+  /**
+   * @function loadWalletStats
+   * @description Fetches wallet statistics from the API and updates the component's state.
+   * Currently uses mock data.
+   */
   const loadWalletStats = async () => {
     try {
-      // Simulate API call - in real implementation, this would fetch from wallet service
+      // Simulate API call - in a real implementation, this would fetch from a wallet service
       await new Promise(resolve => setTimeout(resolve, 500));
       
       setWalletStats({
-        totalBalance: 12545000, // 125,450 TZS in cents
+        totalBalance: 12545000, // Example: 12,545,000 cents = 125,450 TZS
         customersWithBalance: 23,
         loading: false
       });
@@ -49,17 +66,22 @@ export default function StaffDashboard() {
     }
   };
 
+  /**
+   * @function handleLogout
+   * @description Clears staff authentication data from local storage, updates the user context,
+   * and redirects to the staff login page.
+   */
   const handleLogout = () => {
-    // Clear all staff data
+    // Clear all staff-related data from local storage
     localStorage.removeItem('staffToken');
     localStorage.removeItem('staffRefreshToken');
     localStorage.removeItem('staffUser');
     localStorage.removeItem('staffPermissions');
 
-    // Update context
+    // Update the authentication context
     updateStaffToken(null);
 
-    // Redirect to staff login
+    // Redirect to the staff login page
     window.location.href = '/staff/login';
   };
 
@@ -139,6 +161,7 @@ export default function StaffDashboard() {
           </div>
         </div>
 
+        {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center">
@@ -264,12 +287,9 @@ export default function StaffDashboard() {
 
         {/* Dashboard Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Wallet Summary */}
           <div className="bg-white p-6 rounded-lg shadow">
             <WalletSummaryWidget />
           </div>
-
-          {/* Recent Wallet Activity */}
           <div className="bg-white p-6 rounded-lg shadow">
             <WalletActivityWidget />
           </div>

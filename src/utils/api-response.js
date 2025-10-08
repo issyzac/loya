@@ -1,31 +1,22 @@
 /**
- * API response formatting utilities
+ * @module api-response
+ * @description Utilities for formatting and handling API responses.
  */
 
 /**
- * Check if API response indicates success
- * @param {Object} response - API response
- * @returns {b  return {
-    item_id: productData.id,
-    item_name: productData.item_name,
-    description: productData.description,
-    variant_id: variant ? variant.variant_id : null,
-    sku: variant ? variant.sku : null,
-    price_cents: (productData.default_price || (storeInfo ? storeInfo.price : 0)) * 100,
-    available_for_sale: storeInfo ? storeInfo.available_for_sale : false,
-    image_url: productData.image_url,
-    category_id: productData.category_id
-  };ther response is successful
+ * Checks if the API response indicates a successful request.
+ * @param {object} response - The API response object.
+ * @returns {boolean} True if the response is successful, false otherwise.
  */
 export function isSuccessResponse(response) {
   return response && response.success === true;
 }
 
 /**
- * Extract data from successful API response
- * @param {Object} response - API response
- * @param {string} dataKey - Key to extract from response data (optional)
- * @returns {any} Extracted data
+ * Extracts data from a successful API response.
+ * @param {object} response - The API response object.
+ * @param {string} [dataKey=null] - The key to extract from the response data.
+ * @returns {*} The extracted data, or the entire data object if no key is provided. Returns null if the response is not successful.
  */
 export function extractResponseData(response, dataKey = null) {
   if (!isSuccessResponse(response)) {
@@ -40,16 +31,14 @@ export function extractResponseData(response, dataKey = null) {
 }
 
 /**
- * Format customer balance for display
- * @param {Object} balanceData - Balance data from API
- * @returns {Object} Formatted balance object
+ * Formats customer balance data from the API for display.
+ * @param {object} balanceData - The balance data from the API.
+ * @returns {object|null} A formatted balance object or null if input is invalid.
  */
 export function formatCustomerBalance(balanceData) {
   if (!balanceData) return null;
   
-  // Handle both single currency and multi-currency responses
   if (balanceData.currencies) {
-    // Multi-currency response
     const tzsBalance = balanceData.currencies.find(c => c.currency === 'TZS');
     return tzsBalance ? {
       customer_id: balanceData.customer_id,
@@ -61,7 +50,6 @@ export function formatCustomerBalance(balanceData) {
       account_status: tzsBalance.account_status || 'ACTIVE'
     } : null;
   } else {
-    // Single currency response
     return {
       customer_id: balanceData.customer_id,
       currency: balanceData.currency || 'TZS',
@@ -75,9 +63,9 @@ export function formatCustomerBalance(balanceData) {
 }
 
 /**
- * Format credit slip for display
- * @param {Object} slipData - Credit slip data from API
- * @returns {Object} Formatted credit slip object
+ * Formats credit slip data from the API for display.
+ * @param {object} slipData - The credit slip data from the API.
+ * @returns {object|null} A formatted credit slip object or null if input is invalid.
  */
 export function formatCreditSlip(slipData) {
   if (!slipData) return null;
@@ -105,9 +93,9 @@ export function formatCreditSlip(slipData) {
 }
 
 /**
- * Format transaction entry for display
- * @param {Object} entryData - Transaction entry data from API
- * @returns {Object} Formatted transaction entry
+ * Formats transaction entry data from the API for display.
+ * @param {object} entryData - The transaction entry data from the API.
+ * @returns {object|null} A formatted transaction entry object or null if input is invalid.
  */
 export function formatTransactionEntry(entryData) {
   if (!entryData) return null;
@@ -125,9 +113,9 @@ export function formatTransactionEntry(entryData) {
 }
 
 /**
- * Format customer data for display
- * @param {Object} customerData - Customer data from API
- * @returns {Object} Formatted customer object
+ * Formats customer data from the API for display.
+ * @param {object} customerData - The customer data from the API.
+ * @returns {object|null} A formatted customer object or null if input is invalid.
  */
 export function formatCustomerData(customerData) {
   if (!customerData) return null;
@@ -148,9 +136,9 @@ export function formatCustomerData(customerData) {
 }
 
 /**
- * Format product data for display
- * @param {Object} productData - Product data from API
- * @returns {Object} Formatted product object
+ * Formats product data from the API for display.
+ * @param {object} productData - The product data from the API.
+ * @returns {object|null} A formatted product object or null if input is invalid.
  */
 export function formatProductData(productData) {
   if (!productData) return null;
@@ -158,9 +146,6 @@ export function formatProductData(productData) {
   const variant = productData.variants && productData.variants[0];
   const storeInfo = variant && variant.stores && variant.stores[0];
   
-  // Get price from variant's default_price (in cents) if available
-  // The API returns prices in the actual currency amount (e.g., 8000)
-  // We don't need to multiply by 100 since formatTZS will divide by 100
   const price = variant && variant.default_price 
     ? variant.default_price
     : (storeInfo ? storeInfo.price : 0);
@@ -179,9 +164,9 @@ export function formatProductData(productData) {
 }
 
 /**
- * Format pagination data
- * @param {Object} paginationData - Pagination data from API
- * @returns {Object} Formatted pagination object
+ * Formats pagination data from the API.
+ * @param {object} paginationData - The pagination data from the API.
+ * @returns {object|null} A formatted pagination object or null if input is invalid.
  */
 export function formatPaginationData(paginationData) {
   if (!paginationData) return null;
@@ -197,9 +182,9 @@ export function formatPaginationData(paginationData) {
 }
 
 /**
- * Create API request payload for credit slip
- * @param {Object} formData - Form data
- * @returns {Object} API request payload
+ * Creates a credit slip payload for an API request.
+ * @param {object} formData - The form data for the credit slip.
+ * @returns {object} The API request payload.
  */
 export function createCreditSlipPayload(formData) {
   return {
@@ -219,9 +204,9 @@ export function createCreditSlipPayload(formData) {
 }
 
 /**
- * Create API request payload for payment
- * @param {Object} formData - Form data
- * @returns {Object} API request payload
+ * Creates a payment payload for an API request.
+ * @param {object} formData - The form data for the payment.
+ * @returns {object} The API request payload.
  */
 export function createPaymentPayload(formData) {
   return {
