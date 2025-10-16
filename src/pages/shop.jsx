@@ -52,6 +52,10 @@ const products = [
     const updateCustomerOrder = useUpdateOrder();
     const updateCurrentPage = useUpdateCurrentPage();
 
+    useEffect(() => {
+        updateCurrentPage("Home");
+    }, [updateCurrentPage]);
+
     const productSelected = (product) => {
         updateCustomerOrder(product)
     }

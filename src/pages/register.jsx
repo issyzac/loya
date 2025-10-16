@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import { ChevronDownIcon, UserPlusIcon, PhoneIcon } from '@heroicons/react/16/solid'
 import { Button } from "@headlessui/react";
-import logo from "../assets/e-nzi-01.png";
+import logo from "../assets/hze-logo.png";
 
 import axiosInstance from "../api/axios";
 
@@ -66,13 +66,9 @@ const registrationStatus = useRegistrationStatus();
                       <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#B47744'}}></div>
                       <span>Earn 10 points on registration</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
+<div className="flex items-center gap-3 text-sm text-gray-600">
                       <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#B47744'}}></div>
                       <span>Track your visit history</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                      <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#B47744'}}></div>
-                      <span>Redeem points for rewards</span>
                     </div>
                   </div>
                 )}

@@ -1,0 +1,1817 @@
+{
+	"info": {
+		"_postman_id": "98856800-1126-48d4-b251-b02684ff533c",
+		"name": "EnziCRM",
+		"description": "Here is the Postman description for the **Create Customer (POST)** and **Get Customers (GET)** APIs. These descriptions include endpoint details, required headers, example payloads, and responses.\n\n---\n\n### **1\\. Create Customer (POST)**\n\n#### **Endpoint**\n\n- **Method**: `POST`\n    \n- **URL**: `/api/customers/`\n    \n\n#### **Headers**\n\n| Key | Value | Description |\n| --- | --- | --- |\n| `Content-Type` | `application/json` | Specifies the request body format. |\n\n#### **Request Body**\n\n``` json\n{\n  \"name\": \"Loveness Sekulu\", //mandatory\n  \"email\": \"loveness@gmail.com\", //mandatory\n  \"phone_number\": \"+255713456789\",//mandatory\n  \"address\": \"TanHouse\",\n  \"city\": \"Dar es Salaam\",\n  \"region\": \"Coastal\",\n  \"postal_code\": \"12345\",\n  \"customer_code\": \"CUST001\",\n  \"note\": \"Regular customer\",\n  \"total_points\": 100\n}\n\n ```\n\n#### **Example Response**\n\n**Success (201 Created):**\n\n``` json\n{\n  \"respCode\": 201,\n  \"message\": \"Customer created successfully.\",\n  \"customer\": {\n    \"id\": \"64fdc95d1f4e1930fabcde12\",\n    \"name\": \"Loveness Sekulu\",\n    \"email\": \"loveness@gmail.com\",\n    \"phone_number\": \"+255713456789\",\n    \"loyverse_id\": \"f5860f5a-1a3f-4574-add2-fcf38fcf5a16\",\n    \"address\": \"TanHouse\",\n    \"city\": \"Dar es Salaam\",\n    \"region\": \"Coastal\",\n    \"postal_code\": \"12345\",\n    \"country_code\": \"TZ\",\n    \"note\": \"Regular customer\",\n    \"total_points\": 100,\n    \"created_at\": \"2024-12-12T09:06:44.000Z\",\n    \"updated_at\": \"2024-12-12T09:06:44.000Z\"\n  }\n}\n\n ```\n\n**Conflict (409 Conflict):**\n\n``` json\n{\n  \"respCode\": 409,\n  \"message\": \"Customer with this email or phone number already exists.\",\n  \"customer\": {\n    \"id\": \"64fdc95d1f4e1930fabcde12\",\n    \"name\": \"Loveness Sekulu\",\n    \"email\": \"loveness@gmail.com\",\n    \"phone_number\": \"+255713456789\",\n    \"city\": \"Dar es Salaam\",\n    \"region\": \"Coastal\",\n    \"total_points\": 100\n  }\n}\n\n ```\n\n**Validation Error (400 Bad Request):**\n\n``` json\n{\n  \"respCode\": 400,\n  \"message\": \"Validation error.\",\n  \"errors\": {\n    \"email\": [\"Not a valid email address.\"]\n  }\n}\n\n ```\n\n---\n\n### **2\\. Get Customers (GET)**\n\n#### **Endpoint**\n\n- **Method**: `GET`\n    \n- **URL**: `/api/customers/`\n    \n\n#### **Headers**\n\n| Key | Value | Description |\n| --- | --- | --- |\n| `Content-Type` | `application/json` | Specifies the request body format. |\n\n#### **Query Parameters**\n\n| Parameter | Type | Description |\n| --- | --- | --- |\n| `page` | `int` | Page number (default: `1`). |\n| `per_page` | `int` | Number of customers per page (default: `10`). |\n\n#### **Example Request**\n\n``` http\nGET /api/customers?page=1&per_page=5\n\n ```\n\n#### **Example Response**\n\n**Success (200 OK):**\n\n``` json\n{\n  \"respCode\": 200,\n  \"message\": \"Customers retrieved successfully.\",\n  \"pagination\": {\n    \"current_page\": 1,\n    \"per_page\": 5,\n    \"total_customers\": 12,\n    \"total_pages\": 3\n  },\n  \"customers\": [\n    {\n      \"id\": \"64fdc95d1f4e1930fabcde12\",\n      \"name\": \"Loveness Sekulu\",\n      \"email\": \"loveness@gmail.com\",\n      \"phone_number\": \"+255713456789\",\n      \"city\": \"Dar es Salaam\",\n      \"region\": \"Coastal\",\n      \"total_points\": 100\n    },\n    {\n      \"id\": \"64fdc95d1f4e1930fabcde13\",\n      \"name\": \"Fredy Sabuni\",\n      \"email\": \"fredy@gmail.com\",\n      \"phone_number\": \"+255714276333\",\n      \"city\": \"Dar es Salaam\",\n      \"region\": \"East\",\n      \"total_points\": 50\n    }\n  ]\n}\n\n ```\n\n**Validation Error (400 Bad Request):**\n\n``` json\n{\n  \"respCode\": 400,\n  \"message\": \"Invalid query parameters.\",\n  \"errors\": {\n    \"page\": [\"Must be a positive integer.\"]\n  }\n}\n\n ```\n\n---\n\n### **Usage in Postman**\n\n1. **Create Customer (POST)**:\n    \n    - Use `POST` method with `/api/customers/`.\n        \n    - Set `Content-Type` headers\n        \n    - Include the example payload in the request body.\n        \n2. **Get Customers (GET)**:\n    \n    - Use `GET` method with `/api/customers/`.\n        \n    - Set `Content-Type` headers.\n        \n    - Add `page` and `per_page` query parameters to test pagination.\n        \n\n---\n\nThese descriptions can be directly imported into Postman for testing. If you’d like me to create a JSON Postman collection for import, let me know!",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5342285"
+	},
+	"item": [
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Create Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "a0a198f9e2364fb089fcae8b281e2a21",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Gloria Oscar\",\n  \"email\": \"gloriaoscar35@gmail.com\",\n  \"phone_number\": \"0756456440\",\n  \"date_of_birth\": \"1994-10-21\", \n  \"city\": \"Dar es Salaam\",\n  \"region\": \"East\",\n  \"total_points\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://5.180.149.168:5001/api/customers",
+							"protocol": "http",
+							"host": [
+								"5",
+								"180",
+								"149",
+								"168"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Customers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://5.180.149.168:5001/api/customers",
+							"protocol": "http",
+							"host": [
+								"5",
+								"180",
+								"149",
+								"168"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Customers Receipts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://5.180.149.168:5001/api/receipts/search?customer_id=677112efc1417097bbf63add",
+							"protocol": "http",
+							"host": [
+								"5",
+								"180",
+								"149",
+								"168"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"receipts",
+								"search"
+							],
+							"query": [
+								{
+									"key": "customer_id",
+									"value": "677112efc1417097bbf63add"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Customers Orders",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customers/677112efc1417097bbf63add/open-orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"677112efc1417097bbf63add",
+								"open-orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Customers Financial Summary",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://5.180.149.168:5001/api/receipts/search?customer_id=677112efc1417097bbf63add",
+							"protocol": "http",
+							"host": [
+								"5",
+								"180",
+								"149",
+								"168"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"receipts",
+								"search"
+							],
+							"query": [
+								{
+									"key": "customer_id",
+									"value": "677112efc1417097bbf63add"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customer by (id / phone_number / email)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"255714276333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customers/search?id=675ab2c25855c2ccc099e056",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"search"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "675ab2c25855c2ccc099e056"
+								},
+								{
+									"key": "email",
+									"value": "fredmalack15@gmail.com",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Customer by (id / phone_number / email) Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"255714276333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customers/search?id=675ab2c25855c2ccc099e056",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customers",
+								"search"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "675ab2c25855c2ccc099e056"
+								},
+								{
+									"key": "email",
+									"value": "fredmalack15@gmail.com",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n        \"name\": \"Fredy Malack Sabuni\",\n        \"address\": null,\n        \"city\": \"Dar es Salaam\",\n        \"country_code\": null,\n        \"created_at\": \"2024-12-12T09:54:11.000Z\",\n        \"customer_code\": null,\n        \"deleted_at\": null,\n        \"email\": \"fredmalack15@gmail.com\",\n        \"first_visit\": null,\n        \"id\": \"3aefb338-3621-4108-85ba-8f3e0dd917b1\",\n        \"last_visit\": null,\n        \"note\": null,\n        \"permanent_deletion_at\": null,\n        \"phone_number\": \"+255714276333\",\n        \"postal_code\": null,\n        \"region\": \"East\",\n        \"total_points\": 100,\n        \"total_spent\": 0,\n        \"total_visits\": 0,\n        \"updated_at\": \"2024-12-23T09:00:06.000Z\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/customers/675ab2c25855c2ccc099e056",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"customers",
+								"675ab2c25855c2ccc099e056"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "eCommProduct",
+			"item": [
+				{
+					"name": "Get Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products/short",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/short",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								"short"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/amka-01",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								"amka-01"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"amka-01\",\n  \"name\": \"AMKA Blend\",\n  \"href\": \"/shop/amka-01\",\n  \"images\": [\n    { \"src\": \"https://firebasestorage.googleapis.com/v0/b/enzionline-web.firebasestorage.app/o/IMG_9563.jpg?alt=media&token=97ded8d2-bb45-475e-a129-f0e510ff3b86\",\n    \"alt\":\"Picha ya Amka\" \n    }\n  ],\n  \"grind_options\": [\n    { \"name\": \"Whole Bean\", \"in_stock\": true },\n    { \"name\": \"Espresso\", \"in_stock\": true },\n    { \"name\": \"Filter\", \"in_stock\": true },\n    { \"name\": \"French Press\", \"in_stock\": true },\n    { \"name\": \"Moka Pot\", \"in_stock\": true }\n  ],\n  \"weight_options\": [\n    { \"name\": \"250g\", \"price\": \"16,000 Tsh\", \"in_stock\": true },\n    { \"name\": \"1kg\", \"price\": \"65,000 Tsh\", \"in_stock\": true }\n  ],\n  \"description\": \"A classic Colombian coffee with a balanced profile. Expect notes of caramel, nuts, and a hint of citrus acidity.\",\n  \"flavor_notes\": [\n    \"Smooth and balanced\",\n    \"Medium body with a clean finish\",\n    \"Low acidity\",\n    \"Tasting Notes: Caramel, Walnut, Orange\",\n    \"Great for espresso or drip coffee\"\n  ],\n  \"details\": \"Our Colombia Supremo comes from the Huila region, known for its high-quality arabica beans. Roasted medium to develop sweetness and body.\",\n  \"roast_level\": \"Medium\",\n  \"origin\": \"Colombia\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"amka-01\",\n  \"name\": \"AMKA Blend\",\n  \"href\": \"/shop/amka-01\",\n  \"images\": [\n    { \"src\": \"https://firebasestorage.googleapis.com/v0/b/enzionline-web.firebasestorage.app/o/IMG_9563.jpg?alt=media&token=97ded8d2-bb45-475e-a129-f0e510ff3b86\",\n    \"alt\":\"Picha ya Amka\" \n    }\n  ],\n  \"grind_options\": [\n    { \"name\": \"Whole Bean\", \"in_stock\": true },\n    { \"name\": \"Espresso\", \"in_stock\": true },\n    { \"name\": \"Filter\", \"in_stock\": true },\n    { \"name\": \"French Press\", \"in_stock\": true },\n    { \"name\": \"Moka Pot\", \"in_stock\": true }\n  ],\n  \"weight_options\": [\n    { \"name\": \"250g\", \"price\": \"16,000 Tsh\", \"in_stock\": true },\n    { \"name\": \"1kg\", \"price\": \"65,000 Tsh\", \"in_stock\": true }\n  ],\n  \"description\": \"A classic Colombian coffee with a balanced profile. Expect notes of caramel, nuts, and a hint of citrus acidity.\",\n  \"flavor_notes\": [\n    \"Smooth and balanced\",\n    \"Medium body with a clean finish\",\n    \"Low acidity\",\n    \"Tasting Notes: Caramel, Walnut, Orange\",\n    \"Great for espresso or drip coffee\"\n  ],\n  \"details\": \"Our Colombia Supremo comes from the Huila region, known for its high-quality arabica beans. Roasted medium to develop sweetness and body.\",\n  \"roast_level\": \"Medium\",\n  \"origin\": \"Colombia\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/amka-01",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								"amka-01"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"amka-01\",\n  \"name\": \"AMKA Blend\",\n  \"href\": \"/shop/amka-01\",\n  \"images\": [\n    { \"src\": \"https://firebasestorage.googleapis.com/v0/b/enzionline-web.firebasestorage.app/o/IMG_9563.jpg?alt=media&token=97ded8d2-bb45-475e-a129-f0e510ff3b86\",\n    \"alt\":\"Picha ya Amka-01\" \n    }\n  ],\n  \"grind_options\": [\n    { \"name\": \"Whole Bean\", \"in_stock\": true },\n    { \"name\": \"Espresso\", \"in_stock\": true },\n    { \"name\": \"Filter\", \"in_stock\": true },\n    { \"name\": \"French Press\", \"in_stock\": true },\n    { \"name\": \"Moka Pot\", \"in_stock\": true }\n  ],\n  \"weight_options\": [\n    { \"name\": \"250g\", \"price\": \"16,000 Tsh\", \"in_stock\": true },\n    { \"name\": \"1kg\", \"price\": \"65,000 Tsh\", \"in_stock\": true }\n  ],\n  \"description\": \"A classic Colombian coffee with a balanced profile. Expect notes of caramel, nuts, and a hint of citrus acidity.\",\n  \"flavor_notes\": [\n    \"Smooth and balanced\",\n    \"Medium body with a clean finish\",\n    \"Low acidity\",\n    \"Tasting Notes: Caramel, Walnut, Orange\",\n    \"Great for espresso or drip coffee\"\n  ],\n  \"details\": \"Our Colombia Supremo comes from the Huila region, known for its high-quality arabica beans. Roasted medium to develop sweetness and body.\",\n  \"roast_level\": \"Medium\",\n  \"origin\": \"Colombia\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/ecommProducts/amka-01",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"ecommProducts",
+								"amka-01"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rewards",
+			"item": [
+				{
+					"name": "RedeemPoints",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"url\": \"http://5.180.149.168:5001/api/customers/callbacks/register\",\n  \"type\": \"customers.update\",\n  \"status\": \"ENABLED\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/webhooks/register",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"webhooks",
+								"register"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Loyverse",
+			"item": [
+				{
+					"name": "Trigger Sync from Loyverse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/customers/sync",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"customers",
+								"sync"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Receipts from Loyverse",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/receipts/sync/receipts",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"receipts",
+								"sync",
+								"receipts"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Webhook (Loyverse)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"url\": \"http://5.180.149.168:5001/api/customers/callbacks/register\",\n  \"type\": \"customers.update\",\n  \"status\": \"ENABLED\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/webhooks/register",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"webhooks",
+								"register"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Loyverse webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "a0a198f9e2364fb089fcae8b281e2a21",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"url\": \"http://5.180.149.168:5001/api/customers/callbacks/register\",\n  \"type\": \"customers.update\",\n  \"status\": \"ENABLED\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.loyverse.com/v1.0/webhooks/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"loyverse",
+								"com"
+							],
+							"path": [
+								"v1.0",
+								"webhooks",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"contact\": {\n        \"email\": \"issyzac.iz@gmail.com\",\n        \"phone\": \"0755688678\"\n    },\n    \"order_details\": {\n        \"date\": \"2025-05-07T11:00:00\",\n        \"grind\": \"Whole Bean\",\n        \"orderNumber\": \"ENZI-123456\",\n        \"price\": \"15,000 Tsh\",\n        \"productId\": \"amka-01\",\n        \"quantity\": 3,\n        \"weight\": \"250g\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5001/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders by PhoneNumber",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/api/orders/history?phone=0714276333",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"history"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "0714276333"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders by Email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/api/orders/history?email=isayazmollel@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"history"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "isayazmollel@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders by orderNumber",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/api/orders/history/ORD-123456",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"history",
+								"ORD-123456"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders by ProductId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/api/orders/history?product_id=amka-01",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"history"
+							],
+							"query": [
+								{
+									"key": "product_id",
+									"value": "amka-01"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"processing\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5001/api/orders/ENZI-20250925081534930240/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"ENZI-20250925081534930240",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5001/api/orders/history",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"history"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# **EnziCRM Orders API Documentation**\n\n[http://localhost:5001/api/orders](http://localhost:5001/api/orders)\n\n###### **1\\. Create a New Order**\n\n```\n{\n    \"contact\": {\n        \"email\": \"isayazmollel@gmail.com\",\n        \"phone\": \"0712345678\"\n    },\n    \"order_details\": {\n        \"date\": \"2025-05-07T13:37:16.570Z\",\n        \"grind\": \"Whole Bean\",\n        \"orderNumber\": \"ENZI-269462\",\n        \"price\": \"18,000 Tsh\",\n        \"productId\": \"nguvu-01\",\n        \"quantity\": 2,\n        \"weight\": \"250g\"\n    }\n}\n\n ```\n\n###### **2\\. Get All Orders**\n\n```\n{\n    \"orders\": [\n        {\n            \"_id\": \"645a8f9e2364fb089fcae8b2\",\n            \"contact\": {\n                \"email\": \"isayazmollel@gmail.com\",\n                \"phone\": \"0712345678\"\n            },\n            \"order_details\": {\n                \"date\": \"2025-05-07T13:37:16.570Z\",\n                \"grind\": \"Whole Bean\",\n                \"orderNumber\": \"ENZI-269462\",\n                \"price\": \"18,000 Tsh\",\n                \"productId\": \"nguvu-01\",\n                \"quantity\": 2,\n                \"weight\": \"250g\"\n            },\n            \"created_at\": \"2025-05-07T13:37:16.570Z\",\n            \"status\": \"pending\"\n        }\n    ]\n}\n\n ```\n\nNB:\n\n### **Valid Statuses**\n\n- `pending`\n    \n- `confirmed`\n    \n- `processing`\n    \n- `shipped`\n    \n- `delivered`\n    \n- `cancelled`"
+		},
+		{
+			"name": "ChatBot",
+			"item": [
+				{
+					"name": "EnziBot",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session_id\": \"012abc\",\n    \"message\": \"I’m tired and need something strong\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/chat",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"chat"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "https://loyaserver.enzi.coffee/api",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"0700000001\",   \n    \"password\": \"barista123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"0700000001\",  // Email or phone number \n    \"password\": \"barista123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "phone_number",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscription",
+			"item": [
+				{
+					"name": "Delete Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5001/api/orders/68b9b45b44ef039db964bc87",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"orders",
+								"68b9b45b44ef039db964bc87"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Subscriptions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscription Expiring Date",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/expiring?days=7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"expiring"
+							],
+							"query": [
+								{
+									"key": "days",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cupsRange\": \"1 to 2\",\n    \"brewMethod\": \"Espresso\",\n    \"grindPref\": \"Whole Bean\",\n    \"schedule\": \"Every 2 weeks\",\n    \"fullName\": \"Fredy Sabuni\",\n    \"email\": \"fredmalack15@gmail.com\",\n    \"phone\": \"+255714276333\",\n    \"calculatedCupsPerDay\": 1.5,\n    \"timestamp\": \"2025-09-05T12:16:19.449Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription Payment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cupsRange\": \"1 to 2\",\n    \"brewMethod\": \"Espresso\",\n    \"grindPref\": \"Whole Bean\",\n    \"schedule\": \"Every 2 weeks\",\n    \"fullName\": \"Fredy Sabuni\",\n    \"email\": \"fredmalack15@gmail.com\",\n    \"phone\": \"+255714276333\",\n    \"calculatedCupsPerDay\": 1.5,\n    \"timestamp\": \"2025-09-05T12:16:19.449Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscription Reminder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customer_name\": \"Fredy Sabuni\",\n  \"customer_email\": \"fredmalack15@gmail.com\",\n  \"next_delivery_date\": \"2025-10-11T17:40:54.307000\",\n  \"size_kg\": 1,\n  \"total_price_tsh\": 88000,\n  \"delivery_status\": \"Due in 3 days\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/notify-delivery",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"notify-delivery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscription Thank You",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Fredy Sabuni\",\n    \"customer_email\": \"fredmalack15@gmail.com\",\n    \"next_delivery_date\": \"2025-10-15T10:00:00.000Z\",\n    \"size_kg\": 2,\n    \"total_price_tsh\": 176000,\n    \"delivery_status\": \"Due in 3 days\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/notify-delivery",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"notify-delivery"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ghala Subscription REF",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Fredy Sabuni\",\n    \"customer_email\": \"fredmalack15@gmail.com\",\n    \"next_delivery_date\": \"2025-10-15T10:00:00.000Z\",\n    \"size_kg\": 2,\n    \"total_price_tsh\": 176000,\n    \"delivery_status\": \"Due in 3 days\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/notify-delivery",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"notify-delivery"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Delete Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/orders/68baeb592ea834f77428b2e1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								"68baeb592ea834f77428b2e1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/orders/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"orders",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Order",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cupsRange\": \"1 to 2\",\n    \"brewMethod\": \"Espresso\",\n    \"grindPref\": \"Whole Bean\",\n    \"schedule\": \"Every 2 weeks\",\n    \"fullName\": \"Fredy Sabuni\",\n    \"email\": \"fredmalack15@gmail.com\",\n    \"phone\": \"+255714276333\",\n    \"calculatedCupsPerDay\": 1.5,\n    \"timestamp\": \"2025-09-05T12:16:19.449Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Receipts",
+			"item": [
+				{
+					"name": "Sync Receipts",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Status",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wallet",
+			"item": [
+				{
+					"name": "Customers with Balance",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Customers Balance",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5001/api",
+			"type": "default"
+		},
+		{
+			"key": "Token",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

@@ -44,6 +44,9 @@ const receiptData = {
 export default function CustomerHome() {
   return (
     <div className="flow-root">
+        <div className="px-4 sm:px-0">
+            <h3 className="roboto-serif-heading text-base/7 text-gray-900">Your Enzi Visits</h3>
+        </div>
         <div className="relative pb-8">
             <ReceiptsList />
         </div>

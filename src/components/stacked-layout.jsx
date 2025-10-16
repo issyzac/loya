@@ -48,7 +48,7 @@ export function StackedLayout({ navbar, sidebar, children }) {
   let [showSidebar, setShowSidebar] = useState(false)
 
   return (
-    <div className="relative isolate flex min-h-svh w-full flex-col bg-white">
+    <div className="relative isolate flex min-h-svh w-full flex-col bg-white roboto-serif-body">
       {/* Sidebar on mobile */}
       <MobileSidebar open={showSidebar} close={() => setShowSidebar(false)}>
         {sidebar}

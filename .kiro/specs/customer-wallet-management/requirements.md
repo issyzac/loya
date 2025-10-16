@@ -124,3 +124,15 @@ The Customer Wallet Management System is a comprehensive financial management fe
 3. WHEN processing payments THEN the system SHALL handle all transactions in TZS currency
 4. WHEN displaying amounts THEN the system SHALL format TZS amounts with proper thousand separators
 5. WHEN performing calculations THEN the system SHALL handle amounts in cents and convert to TZS for display
+
+### Requirement 11
+
+**User Story:** As a coffee shop staff member, I want to see a visual balance status card that clearly shows customer credit slip amounts and available credit with color coding, so that I can quickly understand the customer's financial status at a glance.
+
+#### Acceptance Criteria
+
+1. WHEN displaying customer balance information THEN the system SHALL show a prominent balance status card with total credit slip amount and available credit
+2. WHEN customer has outstanding credit slips THEN the system SHALL display the balance status card with a yellowish hue to indicate money owed
+3. WHEN customer has available wallet credit THEN the system SHALL display the balance status card with a green hue to indicate available funds
+4. WHEN customer has both credit slips and wallet balance THEN the system SHALL display the net balance with appropriate color coding based on the overall status
+5. WHEN balance status card is displayed THEN the system SHALL show clear labels for "Credit Slips Owed" and "Available Credit" with formatted TZS amounts

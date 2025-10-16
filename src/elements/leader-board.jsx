@@ -10,10 +10,7 @@ function formatTZS(n) {
   try { return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', maximumFractionDigits: 0 }).format(val); } catch { return `TZS ${formatNumber(val)}`; }
 }
 
-const redeemOptions = [
-  { id: 'espresso', name: 'Free Espresso', desc: 'Single shot, any size', cost: 50, icon: GiftIcon },
-  { id: 'pastry', name: 'Any Pastry', desc: 'From the counter', cost: 80, icon: TicketIcon }, 
-]
+const redeemOptions = []
 
 export default function LeaderBoard() {
   const user = useUser();
@@ -78,6 +75,7 @@ export default function LeaderBoard() {
       </div>
 
       {/* Redeem Section */}
+      {redeemOptions.length > 0 && (
       <div className="space-y-3">
         <h4 className="text-sm font-medium text-gray-900">Redeem points</h4>
         <div className="grid grid-cols-1 gap-3">
@@ -114,6 +112,7 @@ export default function LeaderBoard() {
           })}
         </div>
       </div>
+      )}
     </div>
   )
 }

@@ -35,3 +35,9 @@ yarn-error.log*
 .vscode/
 *.swp
 *.swo
+
+# macOS system files
+.DS_Store
+public/.DS_Store
+src/.DS_Store
+src/assets/.DS_Store

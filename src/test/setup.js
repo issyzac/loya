@@ -35,3 +35,18 @@ global.console = {
   warn: vi.fn(),
   error: vi.fn(),
 }
+
+// Mock IntersectionObserver for lazy loading tests
+global.IntersectionObserver = vi.fn().mockImplementation((callback) => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+  // Simulate immediate intersection for tests
+  trigger: (entries) => callback(entries),
+}))
+
+// Mock performance.now for performance monitoring tests
+global.performance = {
+  ...global.performance,
+  now: vi.fn(() => Date.now()),
+}

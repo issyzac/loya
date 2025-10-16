@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../../assets/e-nzi-01.png";
+import logo from "../../assets/hze-logo.png";
 import axiosInstance from "../../api/axios";
 import { useUpdateStaffUser, useUpdateStaffToken, useUpdateStaffRefreshToken, useUpdateStaffPermissions } from "../../providers/UserProvider";
 
