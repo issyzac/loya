@@ -1,8 +1,8 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "http://5.180.149.168:5001"
-      }
-    ]
-  }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
