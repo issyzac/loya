@@ -3,8 +3,8 @@ import axios from "axios";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  //baseURL: "https://loyaserver.enzi.coffee",
-  baseURL: "http://127.0.0.1:5001",
+  baseURL: "https://loyaserver.enzi.coffee",
+  //baseURL: "http://127.0.0.1:5001",
   timeout: 5000,
 });// Add a request interceptor
 axiosInstance.interceptors.request.use(
