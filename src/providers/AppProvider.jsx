@@ -7,6 +7,8 @@ const CustomerOrder= createContext();
 const UpdateOrder = createContext();
 const BuyNow = createContext();
 const UpdateBuyNow = createContext();
+const RemovedItems = createContext();
+const UpdateRemovedItems = createContext();
 
 export function useCurrentPage() {
   return useContext(CurrentPageContext);
@@ -32,25 +34,48 @@ export function useUpdateProductToBuy(){
   return useContext(UpdateBuyNow);
 }
 
+export function useRemovedItems() {
+    return useContext(RemovedItems);
+}
+
+export function useUpdateRemovedItems() {
+    return useContext(UpdateRemovedItems);
+}
+
 export function AppProvider({children}) {
 
   let page = "Home";
 
-  let order = {};
-
   const [currentPage, setCurrentPage] = useState(page);
 
-  const [customerOrder, setOrder] = useState(order);
+  const [customerOrder, setOrder] = useState([]);
 
   const [productToBuy, setProductToBuy] = useState(false);
+
+  const [removedItems, setRemovedItems] = useState([]);
 
   function updateCurrentPage(page) {
     setCurrentPage(page);
   }
 
   function updateCustomerOrder(order){
-    setOrder(order);
+    setOrder(prevOrder => [...prevOrder, order]);
     setProductToBuy(false);
+  }
+
+  function removeCustomerOrder(orderId){
+    const itemToRemove = customerOrder.find(item => item.slip_id === orderId);
+    setRemovedItems(prevRemoved => [...prevRemoved, itemToRemove]);
+    setOrder(prevOrder => prevOrder.filter(item => item.slip_id !== orderId));
+  }
+
+  function clearRemovedItems() {
+    setRemovedItems([]);
+  }
+
+  function clearCartAndRemovedItems() {
+    setOrder([]);
+    setRemovedItems([]);
   }
 
   function updateProductToBuy(buyNow){
@@ -61,10 +86,14 @@ export function AppProvider({children}) {
     <CurrentPageContext.Provider value={currentPage}>
       <UpdateCurrentPageContext.Provider value={updateCurrentPage}>
         <CustomerOrder.Provider value={customerOrder}>
-          <UpdateOrder.Provider value={updateCustomerOrder}>
+          <UpdateOrder.Provider value={{updateCustomerOrder, removeCustomerOrder}}>
             <BuyNow.Provider value={productToBuy}>
               <UpdateBuyNow.Provider value={updateProductToBuy}>
-                {children}
+                <RemovedItems.Provider value={removedItems}>
+                    <UpdateRemovedItems.Provider value={{clearRemovedItems, clearCartAndRemovedItems}}>
+                        {children}
+                    </UpdateRemovedItems.Provider>
+                </RemovedItems.Provider>
               </UpdateBuyNow.Provider>
             </BuyNow.Provider>
           </UpdateOrder.Provider>

@@ -1,6 +1,6 @@
 import { React } from 'react';
-import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { useCustomerOrder, useUpdateProductToBuy } from '../providers/AppProvider';
+import { QuestionMarkCircleIcon, XCircleIcon } from '@heroicons/react/20/solid';
+import { useCustomerOrder, useUpdateOrder, useUpdateProductToBuy } from '../providers/AppProvider';
 import { useUser } from '../providers/UserProvider';
 
 export default function OrderSummary() {
@@ -8,12 +8,19 @@ export default function OrderSummary() {
     const updateProductToBuy = useUpdateProductToBuy();
 
     const customerOrder = useCustomerOrder();
+    const { removeCustomerOrder } = useUpdateOrder();
 
     const user = useUser();
 
     const cancelOrder = () => {
         updateProductToBuy(false);
     }
+
+    const handlePay = () => {
+        console.log(customerOrder);
+    }
+
+    const totalCost = customerOrder.reduce((total, item) => total + (item.grand_total || item.price || 0), 0);
 
     return (
         <div className="shadow mt-4">
@@ -26,28 +33,24 @@ export default function OrderSummary() {
             </h2>
 
             <dl className="mt-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-gray-600"> Available Loya Credit </dt>
-                <dd className="text-sm font-medium text-gray-900"> L¥ {user.total_points}</dd>
-              </div>
+                {customerOrder.map((item) => (
+                    <div key={item.slip_id} className="flex items-center justify-between">
+                        <dt className="text-sm text-gray-600"> {item.slip_number} </dt>
+                        <dd className="text-sm font-medium text-gray-900"> L¥ {item.grand_total || item.price} </dd>
+                        <button onClick={() => removeCustomerOrder(item.slip_id)}>
+                            <XCircleIcon className="h-5 w-5 text-red-500" />
+                        </button>
+                    </div>
+                ))}
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <dt className="flex items-center text-sm text-gray-600">
-                  <span> Item Cost </span>
-                  <a href="#" className="ml-2 shrink-0 text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Learn more about how shipping is calculated</span>
-                    <QuestionMarkCircleIcon aria-hidden="true" className="size-5" />
-                  </a>
+                  <span> Total Cost </span>
                 </dt>
-                <dd className="text-sm font-medium text-gray-900"> L¥ {customerOrder.price} </dd>
-              </div>
-              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                <dt className="flex text-sm text-gray-600">
-                </dt>
-                <dd className="text-sm font-medium text-gray-900">  </dd>
+                <dd className="text-sm font-medium text-gray-900"> L¥ {totalCost} </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <dt className="text-base font-medium text-gray-900">Balance</dt>
-                <dd className="text-base font-medium text-gray-900"> L¥ {user.total_points - customerOrder.price} </dd>
+                <dd className="text-base font-medium text-gray-900"> L¥ {user.total_points - totalCost} </dd>
               </div>
             </dl>
 
@@ -55,9 +58,10 @@ export default function OrderSummary() {
 
             <div className="mt-6">
               <button
+                onClick={handlePay}
                 className="w-full rounded-md border border-transparent bg-[#b58150] px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-[#b58150] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
-                Checkout
+                Pay
               </button>
 
               <div className="mt-6 flex justify-center text-center text-sm text-gray-500">

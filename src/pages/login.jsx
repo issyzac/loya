@@ -1,98 +1,102 @@
-// import { Button } from "@headlessui/react";
-// import React, {useState} from "react";
-// import logo from "../assets/e-nzi-01.png";
-// import { useUpdateUser } from "../providers/UserProvider";
-// import axios from 'axios';
+import React, { useState } from "react";
+import logo from "../assets/hze-logo.png";
+import { useUpdateUser } from "../providers/UserProvider";
+import axiosInstance from "../api/axios";
 
-// //1-1-2025
+// 1-1-2025
+// UI/UX polish only — logic and functions kept the same
 
-// export default function Login() {
+export default function Login() {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const setUser = useUpdateUser();
 
+  const handleChange = (event) => {
+    setPhoneNumber(event.target.value);
+    console.log(phoneNumber);
+  };
 
-//     const  [phoneNumber, setPhoneNumber] =  useState('');
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-//     const setUser = useUpdateUser();
+    axiosInstance
+      .get(`/api/customers/search?phone_number=` + phoneNumber)
+      .then((res) => {
+        console.log("Response Code:   " + res.status);
+        if (res.status === 200) {
+          // user found
+          const usr = res.data.customer;
+          setUser(usr);
+        }
+      })
+      .catch(function (error) {
+        console.log("User not found");
+      });
+  };
 
-//     const  handleChange = (event) => {
-//         setPhoneNumber(event.target.value);
-//         console.log(phoneNumber);
-//     };
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-stone-50 to-stone-100 dark:from-slate-900 dark:to-slate-950">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center text-center">
+          <img
+            alt="Enzi Coffee"
+            src={logo}
+            className="h-16 w-auto mb-6 select-none"
+            draggable={false}
+          />
+          <h2 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
+            Sign in with your phone number
+          </h2>
+          <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+            Earn rewards and track your order pickup.
+          </p>
+        </div>
 
-//     const handleSubmit = (event) => {
-//         event.preventDefault();
-        
-//         axios.get(`http://5.180.149.168:5001/api/customers/search?phone_number=`+phoneNumber)
-//             .then(res => {
-//                 console.log("Response Code:   "+res.status);
-//                 if (res.status === 200){
-//                     //user found
-//                     const usr = res.data.customer;
-//                     setUser(usr);
-//                 }
-//             })    
-//             .catch (function (error){
-//                 console.log('User not found');
-//             });
+        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          <div className="grid gap-2">
+            <label htmlFor="phone_number" className="text-sm font-medium text-stone-800 dark:text-stone-200">
+              Phone number
+            </label>
+            <div className="relative">
+              <input
+                id="phone_number"
+                name="Phone Number"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                required
+                placeholder="e.g. +255 712 345 678"
+                aria-label="Phone Number"
+                className="block w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 placeholder:text-stone-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-600 dark:bg-slate-800 dark:border-slate-700 dark:text-stone-100 dark:placeholder:text-slate-400"
+                value={phoneNumber}
+                onChange={handleChange}
+              />
+              {/* subtle inset glow */}
+              <span className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]" />
+            </div>
+          </div>
 
-//     }
+          <button
+            type="submit"
+            className="group relative inline-flex w-full items-center justify-center rounded-xl bg-amber-600 px-4 py-3 text-white text-base font-semibold shadow-sm transition hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-600"
+          >
+            <svg
+              className="mr-2 h-5 w-5 opacity-90 group-hover:translate-x-0.5 transition"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Sign in
+          </button>
 
-//     return (
-//       <>
-//         <div className="flex min-h-full flex-1 items-center justify-center px-4 py-12 sm:px-6 lg:px-8 mt-30">
-//           <div className="w-full max-w-sm space-y-10">
-//             <div mt-20>
-//               <img
-//                 alt="Enzi Coffee"
-//                 src={logo}
-//                 className="mx-auto h-21 w-auto"
-//               />
-//               <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-//                 Use your phone number to sign in
-//               </h2>
-//             </div>
-//             <form className="space-y-6"
-//               onSubmit={handleSubmit}>
-//               <div>
-//                 <div className="col-span-2">
-//                   <input
-//                     id="phone_number"
-//                     name="Phone Number"
-//                     type="phone_number"
-//                     required
-//                     placeholder="Phone Number"
-//                     autoComplete="phone_number"
-//                     aria-label="Phone Number"
-//                     className="
-//                         block w-full rounded-t-md bg-white px-3 py-1.5 
-//                         text-base text-gray-900 outline outline-1 -outline-offset-1 
-//                         outline-gray-300 placeholder:text-gray-400 focus:relative 
-//                         focus:outline focus:outline-2 focus:-outline-offset-2 
-//                         focus:outline-indigo-600 sm:text-sm/6"
-
-//                         value={phoneNumber} onChange={handleChange}
-
-//                   />
-//                 </div>
-//               </div> http://enzicrm.enzi.coffee/
-//               <div>
-//                 <Button
-//                   type="submit"
-//                   className="
-//                     flex w-full justify-center 
-//                     rounded-md bg-[#b58150] 
-//                     px-3 py-1.5 text-sm/6 font-semibold 
-//                     text-white hover:bg-[#1f2a44] 
-//                     focus-visible:outline focus-visible:outline-2 
-//                     focus-visible:outline-offset-2 focus-visible:outline-indigo-600
-//                     font-family: 'Poiret One' "
-//                     >
-//                   Sign in
-//                 </Button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//       </>
-//     )
-//   }
-  
+          <p className="text-xs text-stone-500 dark:text-stone-400 text-center">
+            By continuing, you agree to our <a href="#" className="underline hover:no-underline">Terms</a> and <a href="#" className="underline hover:no-underline">Privacy Policy</a>.
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
