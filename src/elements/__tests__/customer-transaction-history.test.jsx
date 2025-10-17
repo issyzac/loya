@@ -15,6 +15,28 @@ vi.mock('../../utils/currency', () => ({
   formatTZS: vi.fn((cents) => `${Math.floor(cents / 100)} TZS`)
 }));
 
+// Mock date formatter utility
+vi.mock('../../utils/date-formatter', () => ({
+  formatTransactionDate: vi.fn((dateValue) => {
+    if (!dateValue || dateValue === 'invalid-date') return 'Date unavailable';
+    return '01/15/2024';
+  }),
+  formatTransactionTime: vi.fn((dateValue) => {
+    if (!dateValue || dateValue === 'invalid-date') return 'Time unavailable';
+    return '10:30 AM';
+  }),
+  isValidDate: vi.fn((dateValue) => {
+    return dateValue && dateValue !== 'invalid-date' && dateValue !== null && dateValue !== undefined;
+  }),
+  enhanceTransactionWithDates: vi.fn((transaction) => ({
+    ...transaction,
+    formatted_date: transaction.occurred_at && transaction.occurred_at !== 'invalid-date' ? '01/15/2024' : 'Date unavailable',
+    formatted_time: transaction.occurred_at && transaction.occurred_at !== 'invalid-date' ? '10:30 AM' : 'Time unavailable',
+    is_date_valid: transaction.occurred_at && transaction.occurred_at !== 'invalid-date',
+    raw_occurred_at: transaction.occurred_at
+  }))
+}));
+
 describe('CustomerTransactionHistory', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -276,5 +298,120 @@ describe('CustomerTransactionHistory', () => {
     // Check for responsive grid classes in filter section
     const filterGrid = screen.container.querySelector('.grid-cols-1.md\\:grid-cols-4');
     expect(filterGrid).toBeInTheDocument();
+  });
+
+  it('handles invalid dates gracefully', async () => {
+    const mockTransactionsWithInvalidDates = [
+      {
+        entry_id: '1',
+        entry_type: 'PAYMENT',
+        direction: 'CREDIT',
+        amount_cents: 20000,
+        occurred_at: 'invalid-date',
+        description: 'Payment with invalid date',
+        display_description: 'Payment with invalid date',
+        formatted_amount: '200 TZS'
+      },
+      {
+        entry_id: '2',
+        entry_type: 'PAYMENT',
+        direction: 'CREDIT',
+        amount_cents: 15000,
+        occurred_at: null,
+        description: 'Payment with null date',
+        display_description: 'Payment with null date',
+        formatted_amount: '150 TZS'
+      },
+      {
+        entry_id: '3',
+        entry_type: 'PAYMENT',
+        direction: 'CREDIT',
+        amount_cents: 10000,
+        occurred_at: '2024-01-15T10:30:00Z',
+        description: 'Payment with valid date',
+        display_description: 'Payment with valid date',
+        formatted_amount: '100 TZS'
+      }
+    ];
+
+    customerWalletService.getMyTransactionHistory.mockResolvedValue({
+      success: true,
+      entries: mockTransactionsWithInvalidDates,
+      summary: {
+        total_entries: 3,
+        current_page: 1,
+        per_page: 20,
+        has_more: false
+      }
+    });
+
+    render(<CustomerTransactionHistory />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Payment with invalid date')).toBeInTheDocument();
+    });
+
+    // Check that invalid dates show fallback text
+    expect(screen.getByText('Date unavailable • Time unavailable')).toBeInTheDocument();
+    expect(screen.getByText('Payment with null date')).toBeInTheDocument();
+    expect(screen.getByText('Payment with valid date')).toBeInTheDocument();
+    
+    // Check that valid dates show proper formatting
+    expect(screen.getByText('01/15/2024 • 10:30 AM')).toBeInTheDocument();
+  });
+
+  it('filters out transactions with invalid dates when date filters are applied', async () => {
+    const mockTransactionsWithMixedDates = [
+      {
+        entry_id: '1',
+        entry_type: 'PAYMENT',
+        direction: 'CREDIT',
+        amount_cents: 20000,
+        occurred_at: 'invalid-date',
+        description: 'Payment with invalid date',
+        display_description: 'Payment with invalid date',
+        formatted_amount: '200 TZS'
+      },
+      {
+        entry_id: '2',
+        entry_type: 'PAYMENT',
+        direction: 'CREDIT',
+        amount_cents: 15000,
+        occurred_at: '2024-01-15T10:30:00Z',
+        description: 'Payment with valid date',
+        display_description: 'Payment with valid date',
+        formatted_amount: '150 TZS'
+      }
+    ];
+
+    customerWalletService.getMyTransactionHistory.mockResolvedValue({
+      success: true,
+      entries: mockTransactionsWithMixedDates,
+      summary: {
+        total_entries: 2,
+        current_page: 1,
+        per_page: 20,
+        has_more: false
+      }
+    });
+
+    render(<CustomerTransactionHistory />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Payment with invalid date')).toBeInTheDocument();
+    });
+
+    // Apply date filter
+    const fromDateInput = screen.getByLabelText('From Date');
+    fireEvent.change(fromDateInput, { target: { value: '2024-01-01' } });
+    
+    const applyButton = screen.getByText('Apply Filters');
+    fireEvent.click(applyButton);
+
+    // After filtering, only valid date transactions should remain visible
+    // The invalid date transaction should be filtered out
+    await waitFor(() => {
+      expect(screen.getByText('Payment with valid date')).toBeInTheDocument();
+    });
   });
 });

@@ -10,6 +10,13 @@ import { ErrorDisplay } from '../components/error-display';
 import { Button } from '../components/button';
 import { Text } from '../components/text';
 import { formatTZS } from '../utils/currency';
+import { 
+  formatTransactionDate, 
+  formatTransactionTime, 
+  formatCreditSlipAge,
+  isValidDate,
+  enhanceTransactionWithDates 
+} from '../utils/date-formatter';
 
 /**
  * Customer Wallet Dashboard Component
@@ -63,6 +70,13 @@ export default function CustomerWalletDashboard({
   }, []);
 
   /**
+   * Helper function to safely format credit slip age
+   */
+  const formatCreditSlipAgeDisplay = useCallback((createdAt) => {
+    return formatCreditSlipAge(createdAt);
+  }, []);
+
+  /**
    * Load wallet data including balance, credit slips summary, and recent transactions
    */
   const loadWalletData = useCallback(async (isRetry = false) => {
@@ -111,7 +125,11 @@ export default function CustomerWalletDashboard({
 
       // Handle transactions data (non-critical, can fail gracefully)
       if (transactionsResponse.success) {
-        setRecentTransactions(transactionsResponse.entries || []);
+        // Enhance transactions with properly formatted dates
+        const enhancedTransactions = (transactionsResponse.entries || []).map(transaction => 
+          enhanceTransactionWithDates(transaction)
+        );
+        setRecentTransactions(enhancedTransactions);
       } else {
         console.warn('Failed to load recent transactions:', transactionsResponse.error);
         setRecentTransactions([]);
@@ -400,7 +418,7 @@ export default function CustomerWalletDashboard({
                         {transaction.display_description || transaction.description || 'Transaction'}
                       </Text>
                       <Text className="text-xs text-gray-500">
-                        {transaction.formatted_date}
+                        {transaction.formatted_date || formatTransactionDate(transaction.occurred_at || transaction.created_at)}
                       </Text>
                     </div>
                     <div className="text-right">
@@ -456,38 +474,46 @@ export default function CustomerWalletDashboard({
           <div className="p-4">
             {recentTransactions.length > 0 ? (
               <div className="space-y-3">
-                {recentTransactions.slice(0, 5).map((transaction, index) => (
-                  <div key={transaction.entry_id || index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                    <div className="flex items-start space-x-3 flex-1">
-                      <div className="text-lg" role="img" aria-label="transaction type">
-                        <span dangerouslySetInnerHTML={{ __html: 
-                          transaction.entry_type?.toLowerCase() === 'payment' && transaction.direction === 'CREDIT' ? '<i class="fa-regular fa-money-bill text-green-600"></i>' :
-                          transaction.entry_type?.toLowerCase() === 'payment' && transaction.direction === 'DEBIT' ? '<i class="fa-regular fa-credit-card text-red-600"></i>' :
-                          transaction.entry_type?.toLowerCase() === 'credit_slip' ? '<i class="fa-regular fa-file text-blue-600"></i>' :
-                          transaction.entry_type?.toLowerCase() === 'wallet_application' ? '<i class="fa-regular fa-sync text-purple-600"></i>' :
-                          transaction.entry_type?.toLowerCase() === 'change_storage' ? '<i class="fa-regular fa-building text-orange-600"></i>' :
-                          transaction.entry_type?.toLowerCase() === 'refund' ? '<i class="fa-regular fa-undo text-indigo-600"></i>' :
-                          transaction.direction === 'CREDIT' ? '<i class="fa-regular fa-arrow-up text-green-600"></i>' : '<i class="fa-regular fa-arrow-down text-gray-600"></i>'
-                        }}></span>
+                {recentTransactions.slice(0, 5).map((transaction, index) => {
+                  // Ensure we have properly formatted dates, with fallbacks
+                  const transactionDate = transaction.formatted_date || 
+                    formatTransactionDate(transaction.occurred_at || transaction.created_at);
+                  const transactionTime = transaction.formatted_time || 
+                    formatTransactionTime(transaction.occurred_at || transaction.created_at);
+                  
+                  return (
+                    <div key={transaction.entry_id || index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                      <div className="flex items-start space-x-3 flex-1">
+                        <div className="text-lg" role="img" aria-label="transaction type">
+                          <span dangerouslySetInnerHTML={{ __html: 
+                            transaction.entry_type?.toLowerCase() === 'payment' && transaction.direction === 'CREDIT' ? '<i class="fa-regular fa-money-bill text-green-600"></i>' :
+                            transaction.entry_type?.toLowerCase() === 'payment' && transaction.direction === 'DEBIT' ? '<i class="fa-regular fa-credit-card text-red-600"></i>' :
+                            transaction.entry_type?.toLowerCase() === 'credit_slip' ? '<i class="fa-regular fa-file text-blue-600"></i>' :
+                            transaction.entry_type?.toLowerCase() === 'wallet_application' ? '<i class="fa-regular fa-sync text-purple-600"></i>' :
+                            transaction.entry_type?.toLowerCase() === 'change_storage' ? '<i class="fa-regular fa-building text-orange-600"></i>' :
+                            transaction.entry_type?.toLowerCase() === 'refund' ? '<i class="fa-regular fa-undo text-indigo-600"></i>' :
+                            transaction.direction === 'CREDIT' ? '<i class="fa-regular fa-arrow-up text-green-600"></i>' : '<i class="fa-regular fa-arrow-down text-gray-600"></i>'
+                          }}></span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <Text className="font-medium text-gray-900">
+                            {transaction.display_description || transaction.description || 'Transaction'}
+                          </Text>
+                          <Text className="text-xs text-gray-500">
+                            {transactionDate} • {transactionTime}
+                          </Text>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <Text className="font-medium text-gray-900">
-                          {transaction.display_description || transaction.description || 'Transaction'}
-                        </Text>
-                        <Text className="text-xs text-gray-500">
-                          {transaction.formatted_date} • {transaction.formatted_time}
+                      <div className="text-right ml-4">
+                        <Text className={`text-sm font-semibold ${
+                          transaction.direction === 'CREDIT' ? 'text-green-600' : 'text-gray-700'
+                        }`}>
+                          {transaction.direction === 'CREDIT' ? '+' : ''}{transaction.formatted_amount}
                         </Text>
                       </div>
                     </div>
-                    <div className="text-right ml-4">
-                      <Text className={`text-sm font-semibold ${
-                        transaction.direction === 'CREDIT' ? 'text-green-600' : 'text-gray-700'
-                      }`}>
-                        {transaction.direction === 'CREDIT' ? '+' : ''}{transaction.formatted_amount}
-                      </Text>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <Button
                   onClick={handleViewTransactionHistory}
                   outline

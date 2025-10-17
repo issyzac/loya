@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '../providers/UserProvider';
 import customerWalletService from '../api/customer-wallet-service';
 import { formatTZS } from '../utils/currency';
+import { formatLastActivity, formatRelativeDate, isValidDate } from '../utils/date-formatter';
 import { Button } from '../components/button';
 import { Text } from '../components/text';
 import { Badge } from '../components/badge';
@@ -61,35 +62,62 @@ function SpendingPatterns({ patterns }) {
     );
   }
 
+  // Filter out patterns with invalid or missing data
+  const validPatterns = {
+    most_active_day: patterns.most_active_day && patterns.most_active_day !== 'Invalid Date' ? patterns.most_active_day : null,
+    avg_transaction_amount: patterns.avg_transaction_amount,
+    recent_spending_total: patterns.recent_spending_total,
+    spending_period: patterns.spending_period && isValidDate(patterns.spending_period) ? patterns.spending_period : null
+  };
+
+  // Check if we have any valid patterns to display
+  const hasValidPatterns = Object.values(validPatterns).some(value => value !== null && value !== undefined);
+
+  if (!hasValidPatterns) {
+    return (
+      <div className="text-center py-4">
+        <Text className="text-gray-500">Spending patterns are being calculated</Text>
+        <Text className="text-sm text-gray-400 mt-1">
+          Complete a few more transactions to see detailed patterns
+        </Text>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {patterns.most_active_day && (
+      {validPatterns.most_active_day && (
         <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
           <div>
             <Text className="font-medium text-blue-800">Most Active Day</Text>
-            <Text className="text-sm text-blue-600">{patterns.most_active_day}</Text>
+            <Text className="text-sm text-blue-600">{validPatterns.most_active_day}</Text>
           </div>
           <i className="fa-regular fa-calendar text-2xl text-blue-600"></i>
         </div>
       )}
 
-      {patterns.avg_transaction_amount && (
+      {validPatterns.avg_transaction_amount && (
         <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
           <div>
             <Text className="font-medium text-green-800">Average Transaction</Text>
-            <Text className="text-sm text-green-600">{patterns.avg_transaction_amount}</Text>
+            <Text className="text-sm text-green-600">{validPatterns.avg_transaction_amount}</Text>
           </div>
-          <i class="fa-regular fa-money-bill text-2xl text-green-600"></i>
+          <i className="fa-regular fa-money-bill text-2xl text-green-600"></i>
         </div>
       )}
 
-      {patterns.recent_spending_total && (
+      {validPatterns.recent_spending_total && (
         <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-200">
           <div>
             <Text className="font-medium text-purple-800">Recent Spending</Text>
-            <Text className="text-sm text-purple-600">{patterns.recent_spending_total}</Text>
+            <Text className="text-sm text-purple-600">{validPatterns.recent_spending_total}</Text>
+            {validPatterns.spending_period && (
+              <Text className="text-xs text-purple-500 mt-1">
+                Period: {formatRelativeDate(validPatterns.spending_period)}
+              </Text>
+            )}
           </div>
-          <i class="fa-regular fa-chart-bar text-2xl text-purple-600"></i>
+          <i className="fa-regular fa-chart-bar text-2xl text-purple-600"></i>
         </div>
       )}
     </div>
@@ -340,22 +368,20 @@ export default function CustomerWalletInsights({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="text-center p-3 bg-blue-50 rounded-lg">
               <Text className="text-2xl font-bold text-blue-600">
-                {activity_summary.recent_transaction_count}
+                {activity_summary.recent_transaction_count || 0}
               </Text>
               <Text className="text-sm text-blue-800">Recent Transactions</Text>
             </div>
             
-            {activity_summary.formatted_last_transaction_date && (
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <Text className="text-sm font-bold text-green-600">
-                  {activity_summary.formatted_last_transaction_date}
-                </Text>
-                <Text className="text-sm text-green-800">Last Activity</Text>
-              </div>
-            )}
+            <div className="text-center p-3 bg-green-50 rounded-lg">
+              <Text className="text-sm font-bold text-green-600">
+                {formatLastActivity(activity_summary.last_transaction_date)}
+              </Text>
+              <Text className="text-sm text-green-800">Last Activity</Text>
+            </div>
           </div>
 
-          {!activity_summary.has_recent_activity && (
+          {(!activity_summary.has_recent_activity || !isValidDate(activity_summary.last_transaction_date)) && (
             <div className="text-center py-4 text-gray-500">
               <Text className="text-sm">No recent activity to show</Text>
             </div>

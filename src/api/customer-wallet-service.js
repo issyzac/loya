@@ -1,5 +1,14 @@
 import walletService from './wallet-service.js';
 import { formatTZS } from '../utils/currency.js';
+import { 
+  formatTransactionDate, 
+  formatTransactionTime, 
+  formatDateTime,
+  formatLastActivity,
+  formatCreditSlipAge,
+  enhanceTransactionWithDates,
+  isValidDate 
+} from '../utils/date-formatter.js';
 
 /**
  * Validates customer ID format and content
@@ -163,14 +172,15 @@ class CustomerWalletService {
       const response = await walletService.getTransactionHistory(customerId, currency, page, perPage);
       
       if (response.success && response.entries) {
-        // Format transaction entries for customer display
-        const formattedEntries = response.entries.map(entry => ({
-          ...entry,
-          formatted_amount: formatTZS(entry.amount_cents || 0),
-          formatted_date: new Date(entry.occurred_at).toLocaleDateString(),
-          formatted_time: new Date(entry.occurred_at).toLocaleTimeString(),
-          display_description: this.formatTransactionDescription(entry)
-        }));
+        // Format transaction entries for customer display with date validation
+        const formattedEntries = response.entries.map(entry => {
+          const enhancedEntry = enhanceTransactionWithDates(entry);
+          return {
+            ...enhancedEntry,
+            formatted_amount: formatTZS(entry.amount_cents || 0),
+            display_description: this.formatTransactionDescription(entry)
+          };
+        });
 
         return {
           success: true,
@@ -221,6 +231,23 @@ class CustomerWalletService {
           sum + (slip.totals?.remaining_cents || 0), 0
         );
 
+        // Calculate oldest slip date safely with date validation
+        let oldestSlipDate = null;
+        let oldestSlipDays = 0;
+        
+        if (slips.length > 0) {
+          const validDates = slips
+            .filter(slip => isValidDate(slip.created_at))
+            .map(slip => new Date(slip.created_at).getTime());
+          
+          if (validDates.length > 0) {
+            oldestSlipDate = Math.min(...validDates);
+            oldestSlipDays = Math.max(...validDates.map(dateTime => 
+              Math.floor((Date.now() - dateTime) / (1000 * 60 * 60 * 24))
+            ));
+          }
+        }
+
         return {
           success: true,
           data: response.data,
@@ -229,17 +256,18 @@ class CustomerWalletService {
             total_amount_cents: totalAmountCents,
             formatted_total_amount: formatTZS(totalAmountCents),
             has_outstanding_bills: totalAmountCents > 0,
-            oldest_slip_date: slips.length > 0 ? 
-              Math.min(...slips.map(slip => new Date(slip.created_at).getTime())) : null
+            oldest_slip_date: oldestSlipDate
           },
           slips: slips.map(slip => ({
             ...slip,
             formatted_remaining_amount: formatTZS(slip.totals?.remaining_cents || 0),
-            formatted_created_date: new Date(slip.created_at).toLocaleDateString(),
-            days_old: Math.floor((Date.now() - new Date(slip.created_at).getTime()) / (1000 * 60 * 60 * 24))
+            formatted_created_date: formatTransactionDate(slip.created_at),
+            formatted_age: formatCreditSlipAge(slip.created_at),
+            days_old: isValidDate(slip.created_at) ? 
+              Math.floor((Date.now() - new Date(slip.created_at).getTime()) / (1000 * 60 * 60 * 24)) : null,
+            is_date_valid: isValidDate(slip.created_at)
           })),
-          oldest_slip_days: slips.length > 0 ? 
-            Math.max(...slips.map(slip => Math.floor((Date.now() - new Date(slip.created_at).getTime()) / (1000 * 60 * 60 * 24)))) : 0
+          oldest_slip_days: oldestSlipDays
         };
       }
       
@@ -296,8 +324,11 @@ class CustomerWalletService {
               recent_transaction_count: recentTransactions.length,
               last_transaction_date: recentTransactions[0]?.occurred_at || null,
               formatted_last_transaction_date: recentTransactions[0] ? 
-                new Date(recentTransactions[0].occurred_at).toLocaleDateString() : null,
-              has_recent_activity: recentTransactions.length > 0
+                formatLastActivity(recentTransactions[0].occurred_at) : 'No recent activity',
+              formatted_last_transaction_full_date: recentTransactions[0] ? 
+                formatDateTime(recentTransactions[0].occurred_at) : null,
+              has_recent_activity: recentTransactions.length > 0 && 
+                isValidDate(recentTransactions[0]?.occurred_at)
             },
             spending_patterns: insights.patterns,
             notifications: insights.notifications,
@@ -319,6 +350,8 @@ class CustomerWalletService {
             activity_summary: {
               recent_transaction_count: 0,
               last_transaction_date: null,
+              formatted_last_transaction_date: 'No recent activity',
+              formatted_last_transaction_full_date: null,
               has_recent_activity: false
             },
             spending_patterns: {},
@@ -364,19 +397,29 @@ class CustomerWalletService {
       patterns.avg_transaction_amount = formatTZS(avgTransaction);
       patterns.recent_spending_total = formatTZS(totalSpent);
       
-      // Analyze transaction frequency
-      const transactionDates = transactions.map(t => new Date(t.occurred_at).getDay());
-      const dayFrequency = transactionDates.reduce((acc, day) => {
-        acc[day] = (acc[day] || 0) + 1;
-        return acc;
-      }, {});
+      // Analyze transaction frequency - only use transactions with valid dates
+      const validTransactions = transactions.filter(t => isValidDate(t.occurred_at));
       
-      const mostActiveDay = Object.keys(dayFrequency).reduce((a, b) => 
-        dayFrequency[a] > dayFrequency[b] ? a : b
-      );
-      
-      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      patterns.most_active_day = dayNames[mostActiveDay] || 'Unknown';
+      if (validTransactions.length > 0) {
+        const transactionDates = validTransactions.map(t => new Date(t.occurred_at).getDay());
+        const dayFrequency = transactionDates.reduce((acc, day) => {
+          acc[day] = (acc[day] || 0) + 1;
+          return acc;
+        }, {});
+        
+        const mostActiveDay = Object.keys(dayFrequency).reduce((a, b) => 
+          dayFrequency[a] > dayFrequency[b] ? a : b
+        );
+        
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        patterns.most_active_day = dayNames[mostActiveDay] || 'Unknown';
+        patterns.valid_transactions_count = validTransactions.length;
+        patterns.invalid_transactions_count = transactions.length - validTransactions.length;
+      } else {
+        patterns.most_active_day = 'No valid transaction dates';
+        patterns.valid_transactions_count = 0;
+        patterns.invalid_transactions_count = transactions.length;
+      }
     }
 
     // Generate notifications based on balance status

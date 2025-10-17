@@ -7,6 +7,12 @@ import { Text } from '../components/text';
 import { Input } from '../components/input';
 import { Select } from '../components/select';
 import { formatTZS } from '../utils/currency';
+import { 
+  formatTransactionDate, 
+  formatTransactionTime, 
+  isValidDate,
+  enhanceTransactionWithDates 
+} from '../utils/date-formatter';
 
 /**
  * Customer Transaction History Component
@@ -81,7 +87,12 @@ export default function CustomerTransactionHistory({
       if (!isComponentMounted) return;
 
       if (response.success) {
-        const filteredEntries = applyFilters(response.entries || []);
+        // Enhance transactions with proper date formatting
+        const enhancedEntries = (response.entries || []).map(entry => 
+          enhanceTransactionWithDates(entry)
+        );
+        
+        const filteredEntries = applyFilters(enhancedEntries);
 
         if (resetData || page === 1) {
           setTransactions(filteredEntries);
@@ -122,18 +133,46 @@ export default function CustomerTransactionHistory({
    */
   const applyFilters = useCallback((entries) => {
     return entries.filter(entry => {
-      // Date filtering
+      // Date filtering - handle invalid dates gracefully
       if (filters.dateFrom) {
-        const entryDate = new Date(entry.occurred_at);
-        const fromDate = new Date(filters.dateFrom);
-        if (entryDate < fromDate) return false;
+        const entryDateValue = entry.occurred_at || entry.created_at || entry.date;
+        if (!isValidDate(entryDateValue)) {
+          // Skip entries with invalid dates when filtering by date
+          return false;
+        }
+        
+        try {
+          const entryDate = new Date(entryDateValue);
+          const fromDate = new Date(filters.dateFrom);
+          if (isNaN(entryDate.getTime()) || isNaN(fromDate.getTime())) {
+            return false;
+          }
+          if (entryDate < fromDate) return false;
+        } catch (error) {
+          // Skip entries that cause date parsing errors
+          return false;
+        }
       }
 
       if (filters.dateTo) {
-        const entryDate = new Date(entry.occurred_at);
-        const toDate = new Date(filters.dateTo);
-        toDate.setHours(23, 59, 59, 999); // Include the entire day
-        if (entryDate > toDate) return false;
+        const entryDateValue = entry.occurred_at || entry.created_at || entry.date;
+        if (!isValidDate(entryDateValue)) {
+          // Skip entries with invalid dates when filtering by date
+          return false;
+        }
+        
+        try {
+          const entryDate = new Date(entryDateValue);
+          const toDate = new Date(filters.dateTo);
+          if (isNaN(entryDate.getTime()) || isNaN(toDate.getTime())) {
+            return false;
+          }
+          toDate.setHours(23, 59, 59, 999); // Include the entire day
+          if (entryDate > toDate) return false;
+        } catch (error) {
+          // Skip entries that cause date parsing errors
+          return false;
+        }
       }
 
       // Transaction type filtering
@@ -434,9 +473,13 @@ export default function CustomerTransactionHistory({
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-                        <span>{transaction.formatted_date}</span>
+                        <span className={!transaction.is_date_valid ? 'text-gray-400 italic' : ''}>
+                          {transaction.formatted_date}
+                        </span>
                         <span>•</span>
-                        <span>{transaction.formatted_time}</span>
+                        <span className={!transaction.is_date_valid ? 'text-gray-400 italic' : ''}>
+                          {transaction.formatted_time}
+                        </span>
                         {transaction.reference && (
                           <>
                             <span>•</span>

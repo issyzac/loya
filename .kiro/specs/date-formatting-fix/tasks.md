@@ -11,25 +11,25 @@
   - Test edge cases and fallback scenarios
   - _Requirements: 1.1, 1.2, 4.2_
 
-- [ ] 2. Update customer wallet service to use date utility
+- [x] 2. Update customer wallet service to use date utility
   - Modify `src/api/customer-wallet-service.js` to import and use the new date formatter
   - Replace direct `new Date().toLocaleDateString()` calls with utility functions
   - Add date validation to transaction and credit slip formatting
   - _Requirements: 1.1, 1.2, 2.3, 3.2_
 
-- [ ] 3. Update customer transaction history component
+- [x] 3. Update customer transaction history component
   - Modify `src/elements/customer-transaction-history.jsx` to handle invalid dates gracefully
   - Replace any remaining direct date formatting with utility calls
   - Update transaction display to show appropriate fallbacks for invalid dates
   - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 4. Update customer wallet dashboard component
+- [x] 4. Update customer wallet dashboard component
   - Modify `src/elements/customer-wallet-dashboard.jsx` to use date formatting utility
   - Fix date displays in recent transactions and activity summaries
   - Ensure credit slip age calculations handle invalid dates
   - _Requirements: 1.1, 1.2, 3.1, 3.3_
 
-- [ ] 5. Update customer wallet insights component
+- [x] 5. Update customer wallet insights component
   - Modify `src/elements/customer-wallet-insights.jsx` to use date formatting utility
   - Fix last transaction date display and activity summaries
   - Handle invalid dates in spending pattern calculations
@@ -41,7 +41,7 @@
   - Test insights component with various date scenarios
   - _Requirements: 2.4, 3.3_
 
-- [ ] 7. Verify and test complete solution
+- [x] 7. Verify and test complete solution
   - Test all wallet pages to ensure no "Invalid Date" displays remain
   - Verify consistent date formatting across all components
   - Test with various data scenarios including null/invalid dates
